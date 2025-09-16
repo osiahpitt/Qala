@@ -76,7 +76,7 @@ export default function AuthCallbackPage() {
       case 'loading':
         return (
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
             <h1 className="text-2xl font-bold text-foreground mb-2">
               Verifying Your Account
             </h1>
@@ -89,7 +89,7 @@ export default function AuthCallbackPage() {
       case 'profile_creation':
         return (
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
             <h1 className="text-2xl font-bold text-foreground mb-2">
               Setting Up Your Profile
             </h1>

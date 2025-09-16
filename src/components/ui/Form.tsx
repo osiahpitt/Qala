@@ -6,7 +6,9 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
 
-export interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {}
+export interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
+  // This interface extends FormHTMLAttributes to provide type safety
+}
 
 const Form = React.forwardRef<HTMLFormElement, FormProps>(
   ({ className, ...props }, ref) => {
@@ -71,7 +73,9 @@ const FormLabel = React.forwardRef<HTMLLabelElement, FormLabelProps>(
 
 FormLabel.displayName = 'FormLabel'
 
-export interface FormDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {}
+export interface FormDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {
+  // This interface extends HTMLAttributes to provide type safety for form descriptions
+}
 
 const FormDescription = React.forwardRef<HTMLParagraphElement, FormDescriptionProps>(
   ({ className, ...props }, ref) => {

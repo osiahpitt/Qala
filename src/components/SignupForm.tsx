@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { userRegistrationSchema, type UserRegistration, supportedLanguages } from '@/lib/schemas/user'
+import { USER_VALIDATION } from '@/lib/constants'
 import { Button } from '@/components/ui/Button'
 import { Form, FormField, FormLabel, FormDescription, FormMessage } from '@/components/ui/Form'
 import { Input } from '@/components/ui/Input'
@@ -97,19 +98,41 @@ export function SignupForm({ initialEmail, onSuccess, onEmailConfirmationSent }:
     const stepErrors: Record<string, string> = {}
 
     if (step === 1) {
-      if (!formData.email?.trim()) stepErrors.email = 'Email is required'
-      if (!formData.password?.trim()) stepErrors.password = 'Password is required'
-      if (!formData.confirmPassword?.trim()) stepErrors.confirmPassword = 'Please confirm your password'
-      if (!formData.fullName?.trim()) stepErrors.fullName = 'Full name is required'
+      if (!formData.email?.trim()) {
+        stepErrors.email = 'Email is required'
+      }
+      if (!formData.password?.trim()) {
+        stepErrors.password = 'Password is required'
+      }
+      if (!formData.confirmPassword?.trim()) {
+        stepErrors.confirmPassword = 'Please confirm your password'
+      }
+      if (!formData.fullName?.trim()) {
+        stepErrors.fullName = 'Full name is required'
+      }
     } else if (step === 2) {
-      if (!formData.nativeLanguage) stepErrors.nativeLanguage = 'Please select your native language'
-      if (!formData.targetLanguages?.length) stepErrors.targetLanguages = 'Please select at least one target language'
-      if (!formData.age || formData.age < 16) stepErrors.age = 'You must be at least 16 years old'
+      if (!formData.nativeLanguage) {
+        stepErrors.nativeLanguage = 'Please select your native language'
+      }
+      if (!formData.targetLanguages?.length) {
+        stepErrors.targetLanguages = 'Please select at least one target language'
+      }
+      if (!formData.age || formData.age < USER_VALIDATION.MINIMUM_AGE) {
+        stepErrors.age = 'You must be at least 16 years old'
+      }
     } else if (step === 3) {
-      if (!formData.country?.trim()) stepErrors.country = 'Country is required'
-      if (!formData.timezone?.trim()) stepErrors.timezone = 'Timezone is required'
-      if (!formData.termsAccepted) stepErrors.termsAccepted = 'You must accept the terms and conditions'
-      if (!formData.privacyAccepted) stepErrors.privacyAccepted = 'You must accept the privacy policy'
+      if (!formData.country?.trim()) {
+        stepErrors.country = 'Country is required'
+      }
+      if (!formData.timezone?.trim()) {
+        stepErrors.timezone = 'Timezone is required'
+      }
+      if (!formData.termsAccepted) {
+        stepErrors.termsAccepted = 'You must accept the terms and conditions'
+      }
+      if (!formData.privacyAccepted) {
+        stepErrors.privacyAccepted = 'You must accept the privacy policy'
+      }
     }
 
     setErrors(stepErrors)

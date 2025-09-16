@@ -29,7 +29,7 @@ export default function VerifyEmailPage() {
       } else {
         setResendError(result.error || 'Failed to resend verification email')
       }
-    } catch (error) {
+    } catch (_error) {
       setResendError('Failed to resend verification email')
     } finally {
       setIsResending(false)
