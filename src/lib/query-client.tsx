@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useState } from 'react'
+import { QUERY_CLIENT_CONFIG } from './constants'
 
 function makeQueryClient() {
   return new QueryClient({
@@ -10,16 +11,16 @@ function makeQueryClient() {
       queries: {
         // With SSR, we usually want to set some default staleTime
         // above 0 to avoid refetching immediately on the client
-        staleTime: 60 * 1000, // 1 minute
+        staleTime: QUERY_CLIENT_CONFIG.STALE_TIME_MS, // 1 minute
         refetchOnWindowFocus: false,
         retry: (failureCount, error) => {
           // Don't retry on 4xx errors
           if (error instanceof Error && 'status' in error && typeof error.status === 'number') {
-            if (error.status >= 400 && error.status < 500) {
+            if (error.status >= QUERY_CLIENT_CONFIG.CLIENT_ERROR_MIN && error.status < QUERY_CLIENT_CONFIG.CLIENT_ERROR_MAX) {
               return false
             }
           }
-          return failureCount < 3
+          return failureCount < QUERY_CLIENT_CONFIG.MAX_RETRY_ATTEMPTS
         },
       },
       mutations: {

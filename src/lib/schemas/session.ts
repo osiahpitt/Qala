@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { supportedLanguages } from './user'
+import { SESSION_VALIDATION } from '../constants'
 
 // Session rating schema
 export const sessionRatingSchema = z.object({
@@ -7,11 +8,11 @@ export const sessionRatingSchema = z.object({
 
   rating: z
     .number()
-    .min(1, 'Rating must be at least 1')
-    .max(5, 'Rating must be at most 5')
+    .min(SESSION_VALIDATION.RATING_MIN, 'Rating must be at least 1')
+    .max(SESSION_VALIDATION.RATING_MAX, 'Rating must be at most 5')
     .int('Rating must be a whole number'),
 
-  feedback: z.string().max(500, 'Feedback must not exceed 500 characters').optional(),
+  feedback: z.string().max(SESSION_VALIDATION.FEEDBACK_MAX_LENGTH, 'Feedback must not exceed 500 characters').optional(),
 
   wouldRecommend: z.boolean().optional(),
 
@@ -46,14 +47,14 @@ export const sessionReportSchema = z.object({
 
   description: z
     .string()
-    .min(10, 'Please provide at least 10 characters describing the issue')
-    .max(1000, 'Description must not exceed 1000 characters'),
+    .min(SESSION_VALIDATION.REPORT_DESCRIPTION_MIN_LENGTH, 'Please provide at least 10 characters describing the issue')
+    .max(SESSION_VALIDATION.REPORT_DESCRIPTION_MAX_LENGTH, 'Description must not exceed 1000 characters'),
 
   severity: z.enum(['low', 'medium', 'high', 'critical']).optional(),
 
   evidenceUrls: z
     .array(z.string().url('Evidence URL must be valid'))
-    .max(5, 'You can provide up to 5 evidence URLs')
+    .max(SESSION_VALIDATION.MAX_EVIDENCE_URLS, 'You can provide up to 5 evidence URLs')
     .optional(),
 })
 
@@ -68,8 +69,8 @@ export const sessionCreationSchema = z
 
     expectedDuration: z
       .number()
-      .min(5, 'Session must be at least 5 minutes')
-      .max(120, 'Session cannot exceed 120 minutes')
+      .min(SESSION_VALIDATION.MIN_SESSION_DURATION, 'Session must be at least 5 minutes')
+      .max(SESSION_VALIDATION.MAX_SESSION_DURATION, 'Session cannot exceed 120 minutes')
       .optional(),
   })
   .refine(data => data.user1Id !== data.user2Id, {
@@ -111,13 +112,13 @@ export const vocabularySaveSchema = z
     originalText: z
       .string()
       .min(1, 'Original text cannot be empty')
-      .max(500, 'Original text must not exceed 500 characters')
+      .max(SESSION_VALIDATION.MAX_TRANSLATION_TEXT_LENGTH, 'Original text must not exceed 500 characters')
       .trim(),
 
     translatedText: z
       .string()
       .min(1, 'Translated text cannot be empty')
-      .max(500, 'Translated text must not exceed 500 characters')
+      .max(SESSION_VALIDATION.MAX_TRANSLATION_TEXT_LENGTH, 'Translated text must not exceed 500 characters')
       .trim(),
 
     sourceLanguage: z.enum(supportedLanguages, {
@@ -128,7 +129,7 @@ export const vocabularySaveSchema = z
       message: 'Please select a valid target language',
     }),
 
-    context: z.string().max(200, 'Context must not exceed 200 characters').optional(),
+    context: z.string().max(SESSION_VALIDATION.MAX_CONTEXT_LENGTH, 'Context must not exceed 200 characters').optional(),
 
     difficulty: z.enum(['easy', 'medium', 'hard']).optional(),
   })
@@ -145,7 +146,7 @@ export const connectionStatsSchema = z.object({
 
   bitrate: z.number().min(0),
   latency: z.number().min(0),
-  packetLoss: z.number().min(0).max(100),
+  packetLoss: z.number().min(0).max(SESSION_VALIDATION.MAX_PACKET_LOSS_PERCENT),
   jitter: z.number().min(0),
   bandwidth: z.number().min(0),
 

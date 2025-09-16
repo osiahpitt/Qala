@@ -204,3 +204,52 @@ body {
 .connection-status-bad {
   color: var(--connection-bad);
 }
+
+/* Hero Section Typography - Netflix/Acquisition.com inspired */
+.hero-headline {
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-family: var(--font-geist-sans);
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.hero-subheadline {
+  font-size: clamp(1.125rem, 3vw, 1.5rem);
+  font-weight: 500;
+  line-height: 1.4;
+  font-family: var(--font-geist-sans);
+}
+
+.hero-description {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  font-weight: 400;
+  line-height: 1.6;
+  font-family: var(--font-geist-sans);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .hero-headline {
+    font-size: clamp(2rem, 7vw, 3rem);
+    text-align: center;
+  }
+
+  .hero-subheadline {
+    font-size: clamp(1rem, 4vw, 1.25rem);
+  }
+
+  .hero-description {
+    font-size: clamp(0.875rem, 3vw, 1.125rem);
+  }
+}
+
+/* High contrast adjustments for accessibility */
+@media (prefers-contrast: high) {
+  .hero-headline,
+  .hero-subheadline,
+  .hero-description {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  }
+}

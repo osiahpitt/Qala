@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { USER_VALIDATION } from '../constants'
 
 // Supported languages for the platform
 export const supportedLanguages = [
@@ -32,13 +33,13 @@ export const userRegistrationSchema = z
     email: z
       .string()
       .email('Please enter a valid email address')
-      .min(3, 'Email must be at least 3 characters')
-      .max(255, 'Email must not exceed 255 characters'),
+      .min(USER_VALIDATION.EMAIL_MIN_LENGTH, 'Email must be at least 3 characters')
+      .max(USER_VALIDATION.EMAIL_MAX_LENGTH, 'Email must not exceed 255 characters'),
 
     password: z
       .string()
-      .min(8, 'Password must be at least 8 characters')
-      .max(128, 'Password must not exceed 128 characters')
+      .min(USER_VALIDATION.PASSWORD_MIN_LENGTH, 'Password must be at least 8 characters')
+      .max(USER_VALIDATION.PASSWORD_MAX_LENGTH, 'Password must not exceed 128 characters')
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
         'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
@@ -48,8 +49,8 @@ export const userRegistrationSchema = z
 
     fullName: z
       .string()
-      .min(2, 'Full name must be at least 2 characters')
-      .max(255, 'Full name must not exceed 255 characters')
+      .min(USER_VALIDATION.NAME_MIN_LENGTH, 'Full name must be at least 2 characters')
+      .max(USER_VALIDATION.FULL_NAME_MAX_LENGTH, 'Full name must not exceed 255 characters')
       .regex(
         /^[a-zA-Z\s\-'\.]+$/,
         'Full name can only contain letters, spaces, hyphens, apostrophes, and periods'
@@ -62,7 +63,7 @@ export const userRegistrationSchema = z
     targetLanguages: z
       .array(z.enum(supportedLanguages))
       .min(1, 'Please select at least one target language')
-      .max(5, 'You can select up to 5 target languages')
+      .max(USER_VALIDATION.MAX_TARGET_LANGUAGES, 'You can select up to 5 target languages')
       .refine(
         languages => new Set(languages).size === languages.length,
         'Target languages must be unique'
@@ -70,8 +71,8 @@ export const userRegistrationSchema = z
 
     age: z
       .number()
-      .min(16, 'You must be at least 16 years old to use QALA')
-      .max(120, 'Please enter a valid age'),
+      .min(USER_VALIDATION.MINIMUM_AGE, 'You must be at least 16 years old to use QALA')
+      .max(USER_VALIDATION.MAXIMUM_AGE, 'Please enter a valid age'),
 
     gender: z
       .enum(['male', 'female', 'non-binary', 'prefer-not-to-say'], {
@@ -81,13 +82,13 @@ export const userRegistrationSchema = z
 
     country: z
       .string()
-      .length(3, 'Country code must be exactly 3 characters')
+      .length(USER_VALIDATION.COUNTRY_CODE_LENGTH, 'Country code must be exactly 3 characters')
       .regex(/^[A-Z]{3}$/, 'Country code must be in ISO 3166-1 alpha-3 format (e.g., USA, GBR)'),
 
     timezone: z
       .string()
-      .min(3, 'Timezone is required')
-      .max(50, 'Timezone must not exceed 50 characters')
+      .min(USER_VALIDATION.TIMEZONE_MIN_LENGTH, 'Timezone is required')
+      .max(USER_VALIDATION.TIMEZONE_MAX_LENGTH, 'Timezone must not exceed 50 characters')
       .regex(
         /^[A-Za-z_\/]+\/[A-Za-z_\/]+$/,
         'Timezone must be in IANA format (e.g., America/New_York)'
@@ -133,7 +134,7 @@ export const loginSchema = z.object({
   email: z
     .string()
     .email('Please enter a valid email address')
-    .min(3, 'Email must be at least 3 characters'),
+    .min(USER_VALIDATION.EMAIL_MIN_LENGTH, 'Email must be at least 3 characters'),
 
   password: z.string().min(1, 'Password is required'),
 
@@ -150,8 +151,8 @@ export const newPasswordSchema = z
   .object({
     password: z
       .string()
-      .min(8, 'Password must be at least 8 characters')
-      .max(128, 'Password must not exceed 128 characters')
+      .min(USER_VALIDATION.PASSWORD_MIN_LENGTH, 'Password must be at least 8 characters')
+      .max(USER_VALIDATION.PASSWORD_MAX_LENGTH, 'Password must not exceed 128 characters')
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
         'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
@@ -175,14 +176,14 @@ export const matchingPreferencesSchema = z
 
     preferredAgeMin: z
       .number()
-      .min(16, 'Minimum age must be at least 16')
-      .max(120, 'Please enter a valid minimum age')
+      .min(USER_VALIDATION.MINIMUM_AGE, 'Minimum age must be at least 16')
+      .max(USER_VALIDATION.MAXIMUM_AGE, 'Please enter a valid minimum age')
       .optional(),
 
     preferredAgeMax: z
       .number()
-      .min(16, 'Maximum age must be at least 16')
-      .max(120, 'Please enter a valid maximum age')
+      .min(USER_VALIDATION.MINIMUM_AGE, 'Maximum age must be at least 16')
+      .max(USER_VALIDATION.MAXIMUM_AGE, 'Please enter a valid maximum age')
       .optional(),
 
     preferredGender: z.enum(['male', 'female', 'non-binary', 'any']).optional(),
