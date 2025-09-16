@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { SignupForm } from '@/components/SignupForm'
 
-export default function SignupPage() {
+function SignupContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [emailSent, setEmailSent] = useState(false)
@@ -71,5 +71,26 @@ export default function SignupPage() {
         />
       </div>
     </div>
+  )
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="max-w-4xl w-full mx-auto p-6">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-foreground mb-2">
+              Join QALA
+            </h1>
+            <p className="text-foreground-muted">
+              Loading signup form...
+            </p>
+          </div>
+        </div>
+      </div>
+    }>
+      <SignupContent />
+    </Suspense>
   )
 }
