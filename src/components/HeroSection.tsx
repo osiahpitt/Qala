@@ -142,6 +142,16 @@ export function HeroSection({
               type="submit"
               className="netflix-get-started-btn"
               disabled={!email.trim() || isSubmitting}
+              style={{
+                backgroundColor: '#e5b567',
+                color: '#000',
+                border: 'none',
+                fontWeight: 'normal',
+                borderRadius: '4px',
+                fontSize: '1rem',
+                cursor: 'pointer',
+                padding: '12px 24px'
+              }}
             >
               {isSubmitting ? 'Please wait...' : 'Get Started'}
             </button>
