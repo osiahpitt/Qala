@@ -18,8 +18,8 @@
 /* Container: center form flexbox - EXACT original proportions */
 .signupContainer {
   width: 100vw;
-  max-width: 420px;
-  padding: 2rem 1.5rem;
+  max-width: 360px;
+  padding: 1.5rem 1rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -31,17 +31,17 @@
   background: rgba(255, 255, 255, 0.92);
   border-radius: 16px;
   box-shadow: 0 7px 25px rgba(78, 65, 41, 0.25);
-  padding: 3rem 2.5rem 2.5rem 2.5rem;
+  padding: 2.5rem 2rem 2rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.4rem;
+  gap: 1.2rem;
   color: #3b3a2f;
 }
 
 /* Title styling with deep earthy color - EXACT original proportions */
 .signupTitle {
-  font-size: 2.2rem;
+  font-size: 1.8rem;
   font-weight: 700;
   margin: 0;
   user-select: none;
@@ -54,22 +54,22 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1.3rem;
+  gap: 1rem;
 }
 
 /* Google sign-in button - EXACT original proportions */
 .googleSigninBtn {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
   justify-content: center;
   background: #ffdf00; /* golden yellow */
   border: none;
   border-radius: 12px;
-  padding: 0.9rem 1.8rem;
+  padding: 0.75rem 1.5rem;
   cursor: pointer;
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: #3b3a2f; /* dark text for contrast */
   box-shadow: 0 6px 20px rgba(255, 223, 0, 0.6);
   transition:
@@ -94,16 +94,16 @@
 .divider {
   position: relative;
   text-align: center;
-  margin: 1.2rem 0 1.4rem 0;
+  margin: 0.8rem 0 1rem 0;
   color: #8a8b8d;
-  font-size: 1.15rem;
+  font-size: 0.9rem;
   font-weight: 600;
   user-select: none;
 }
 
 .divider span {
   background: rgba(255, 255, 255, 0.92);
-  padding: 0 1.4rem;
+  padding: 0 1rem;
   position: relative;
   z-index: 1;
 }
@@ -121,10 +121,10 @@
 
 /* Labels with earthy dark olive tone - EXACT original proportions */
 .label {
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #3b3a2f;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
   display: block;
   user-select: none;
 }
@@ -132,10 +132,10 @@
 /* Inputs with warm subtle shadows and rounding - EXACT original proportions */
 .input {
   width: 100%;
-  padding: 1rem 1.1rem;
+  padding: 0.7rem 0.8rem;
   border: 1.8px solid #b9babd;
   border-radius: 12px;
-  font-size: 1.15rem;
+  font-size: 0.95rem;
   color: #3b3a2f;
   background: #fafafa;
   transition:
@@ -159,13 +159,13 @@
 
 /* Signup submit button - EXACT original proportions */
 .signupBtn {
-  margin-top: 1.2rem;
-  padding: 1rem 0;
+  margin-top: 1rem;
+  padding: 0.75rem 0;
   background: #ffdf00; /* golden yellow */
   color: #3b3a2f; /* dark text for contrast */
   border: none;
   border-radius: 14px;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 7px 22px rgba(255, 223, 0, 0.7);
