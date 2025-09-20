@@ -365,31 +365,31 @@ body {
 }
 
 .netflix-get-started-btn {
-  background-color: #e5b567; /* Qala golden yellow */
-  color: #000;
-  border: none;
-  font-weight: normal;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  padding: 12px 24px;
-  white-space: nowrap;
+  background-color: #e5b567 !important; /* Qala golden yellow */
+  color: #000 !important;
+  border: none !important;
+  font-weight: normal !important;
+  border-radius: 4px !important;
+  font-size: 1rem !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+  padding: 12px 24px !important;
+  white-space: nowrap !important;
 }
 
 .netflix-get-started-btn:hover {
-  background-color: #c9ac5b; /* Darker golden on hover */
+  background-color: #c9ac5b !important; /* Darker golden on hover */
 }
 
 .netflix-get-started-btn:disabled {
-  background-color: #666;
-  cursor: not-allowed;
+  background-color: #666 !important;
+  cursor: not-allowed !important;
 }
 
 .netflix-signin-btn {
-  background: #a64320; /* Red earth color as specified */
+  background: #e5b567 !important; /* Golden yellow same as Qala logo */
   padding: 8px 18px;
-  color: #fff;
+  color: #000 !important; /* Black text on golden background */
   border: none;
   font-weight: bold;
   text-decoration: none;
@@ -400,7 +400,7 @@ body {
 }
 
 .netflix-signin-btn:hover {
-  background: #833618; /* Darker red earth on hover */
+  background: #c9ac5b !important; /* Darker golden on hover */
 }
 
 /* Mobile responsiveness for Netflix-style form */

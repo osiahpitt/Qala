@@ -92,11 +92,16 @@ export default function LoginPage() {
         <div className="mb-6">
           <Button
             type="button"
-            variant="outline"
             onClick={handleGoogleSignIn}
             disabled={isGoogleLoading || isSubmitting}
             loading={isGoogleLoading}
-            className="w-full mb-4 border-gray-300 hover:bg-gray-50"
+            className="w-full mb-4"
+            style={{
+              backgroundColor: '#e5b567',
+              color: '#000',
+              border: 'none',
+              fontWeight: 'normal'
+            }}
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" aria-hidden="true">
               <path
