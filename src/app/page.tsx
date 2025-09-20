@@ -26,6 +26,7 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       <HeroSection
+        backgroundImage="/QalaCave-nosmoke.jpg"
         headline="Become Fluent With Natives Through Instant Video Chat"
         pricing="Free with ads, or ad free for $7.99/month. Cancel anytime."
         subheadline="Ready to match? Enter your email to get started."

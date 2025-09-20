@@ -365,10 +365,10 @@ body {
 }
 
 .netflix-get-started-btn {
-  background-color: var(--qala-gold);
+  background-color: #e5b567; /* Qala golden yellow */
   color: #000;
   border: none;
-  font-weight: 600;
+  font-weight: normal;
   border-radius: 4px;
   font-size: 1rem;
   cursor: pointer;
@@ -378,7 +378,7 @@ body {
 }
 
 .netflix-get-started-btn:hover {
-  background-color: var(--qala-gold-dark);
+  background-color: #c9ac5b; /* Darker golden on hover */
 }
 
 .netflix-get-started-btn:disabled {
@@ -387,7 +387,7 @@ body {
 }
 
 .netflix-signin-btn {
-  background: var(--qala-earth);
+  background: #a64320; /* Red earth color as specified */
   padding: 8px 18px;
   color: #fff;
   border: none;
@@ -400,7 +400,7 @@ body {
 }
 
 .netflix-signin-btn:hover {
-  background: var(--qala-earth-dark);
+  background: #833618; /* Darker red earth on hover */
 }
 
 /* Mobile responsiveness for Netflix-style form */
