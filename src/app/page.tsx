@@ -26,10 +26,10 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       <HeroSection
-        headline="Become Fluent with Natives"
-        pricing="Freemium with ads, $7.99 for Premium. Cancel anytime."
-        subheadline="Ready to match with natives?"
-        ctaText="create account"
+        headline="Become Fluent With Natives Through Instant Video Chat"
+        pricing="Free with ads, or ad free for $7.99/month. Cancel anytime."
+        subheadline="Ready to match? Enter your email to get started."
+        ctaText="Get Started"
         onEmailSubmit={handleEmailSubmit}
       />
     </main>

@@ -12,6 +12,7 @@ import {
   signUp,
   signIn,
   signOut,
+  signInWithGoogle,
   resetPassword,
   updatePassword,
   getCurrentUser,
@@ -20,6 +21,7 @@ import {
   resendConfirmation,
   type AuthResponse,
   type SignUpResponse,
+  type OAuthResponse,
   type AuthEventType,
 } from '@/lib/auth'
 import type { UserRegistration, Login } from '@/lib/schemas/user'
@@ -67,6 +69,7 @@ export interface AuthContextType extends AuthState {
   // Authentication methods
   signUp: (userData: UserRegistration) => Promise<SignUpResponse>
   signIn: (credentials: Login) => Promise<AuthResponse>
+  signInWithGoogle: () => Promise<OAuthResponse>
   signOut: () => Promise<AuthResponse>
   resetPassword: (email: string) => Promise<AuthResponse>
   updatePassword: (newPassword: string) => Promise<AuthResponse>
@@ -148,7 +151,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => {
       mounted = false
     }
-  }, [])
+  }, [fetchUserProfile])
 
   /**
    * Subscribe to auth state changes
@@ -194,7 +197,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [fetchUserProfile])
 
   /**
    * Fetch user profile from database
@@ -285,6 +288,39 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return result
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Sign in failed'
+      setError(errorMessage)
+      return {
+        success: false,
+        error: errorMessage,
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  /**
+   * Sign in/up with Google OAuth
+   */
+  const handleSignInWithGoogle = async (): Promise<OAuthResponse> => {
+    try {
+      setIsLoading(true)
+      setError(null)
+
+      const result = await signInWithGoogle()
+
+      if (!result.success) {
+        const errorMessage = result.error || 'Google sign in failed'
+        setError(errorMessage)
+        return {
+          success: false,
+          error: errorMessage,
+        }
+      }
+
+      // OAuth redirects the user, so we don't need to handle success here
+      return result
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Google sign in failed'
       setError(errorMessage)
       return {
         success: false,
@@ -450,6 +486,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Methods
     signUp: handleSignUp,
     signIn: handleSignIn,
+    signInWithGoogle: handleSignInWithGoogle,
     signOut: handleSignOut,
     resetPassword: handleResetPassword,
     updatePassword: handleUpdatePassword,

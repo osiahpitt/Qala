@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
-import { Button } from '@/components/ui/Button'
 import { validateEmail } from '@/lib/schemas/email'
+import { Header } from '@/components/Header'
 
 interface HeroSectionProps {
   backgroundImage?: string
@@ -17,7 +17,7 @@ export function HeroSection({
   headline,
   subheadline,
   pricing,
-  ctaText,
+  ctaText: _ctaText,
   onEmailSubmit,
 }: HeroSectionProps) {
   const [email, setEmail] = useState('')
@@ -55,10 +55,10 @@ export function HeroSection({
   }
 
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden">
+    <div className="netflix-hero">
       {/* Background Layer */}
-      <div className="absolute inset-0 z-0">
-        {backgroundImage ? (
+      {backgroundImage ? (
+        <div className="netflix-hero-background">
           <Image
             src={backgroundImage}
             alt="QALA Hero Background"
@@ -67,41 +67,60 @@ export function HeroSection({
             priority
             quality={85}
             sizes="100vw"
+            onError={() => {
+              // Fallback to CSS gradient if image fails to load
+              const element = document.querySelector('.netflix-hero-background') as HTMLElement
+              if (element) {
+                element.style.background = 'linear-gradient(135deg, #2c1810 0%, #1a0f0a 50%, #0f0806 100%)'
+                element.style.backgroundSize = 'cover'
+              }
+            }}
           />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-primary via-secondary to-accent" />
-        )}
-        {/* Overlay for text readability */}
-        <div className="absolute inset-0 bg-black/50" />
-      </div>
+        </div>
+      ) : (
+        // Fallback gradient background inspired by cave/earth theme
+        <div
+          className="netflix-hero-background"
+          style={{
+            background: 'linear-gradient(135deg, #2c1810 0%, #1a0f0a 50%, #0f0806 100%)',
+            backgroundSize: 'cover'
+          }}
+        />
+      )}
+
+      {/* Overlay for text readability */}
+      <div className="netflix-overlay" />
+
+      {/* Header */}
+      <Header variant="landing" />
 
       {/* Content Layer */}
-      <div className="relative z-10 text-center max-w-5xl mx-auto px-6">
-        {/* Main Headline - Netflix/Acquisition.com inspired */}
-        <h1 className="hero-headline text-white mb-6 font-bold leading-none tracking-tight">
+      <div className="netflix-content shifted">
+        {/* Main Headline - Netflix style */}
+        <h1 className="netflix-main-header">
           {headline}
         </h1>
 
         {/* Pricing Information */}
-        <p className="hero-subheadline text-white/90 mb-4 font-medium">
+        <p className="netflix-subscription-info">
           {pricing}
         </p>
 
         {/* Subheadline */}
-        <p className="hero-description text-white/80 mb-12 max-w-2xl mx-auto text-lg">
+        <h2 className="netflix-subheader">
           {subheadline}
-        </p>
+        </h2>
 
         {/* Email Capture Form */}
-        <form onSubmit={handleSubmit} className="max-w-md mx-auto">
+        <form onSubmit={handleSubmit}>
           {/* Success Message */}
           {success && (
-            <div className="mb-4 p-4 rounded-lg bg-green-600/20 border border-green-600/30 text-green-200 text-center">
-              ✓ Thanks! We&apos;ll contact you soon for your 7-day free trial.
+            <div className="mb-4 p-4 rounded-lg bg-green-600/20 border border-green-600/30 text-green-200 text-center max-w-md mx-auto">
+              ✓ Thanks! Redirecting you to create your account...
             </div>
           )}
 
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="netflix-email-form">
             <input
               type="email"
               value={email}
@@ -111,23 +130,21 @@ export function HeroSection({
                   setError(null) // Clear error on typing
                 }
               }}
-              placeholder="Enter your email for 7 day free trial"
-              className={`flex-1 px-6 py-4 rounded-lg border-0 text-foreground text-lg placeholder:text-foreground-muted focus:outline-none focus:ring-2 ${
-                error ? 'focus:ring-red-500 ring-1 ring-red-500' : 'focus:ring-primary'
+              placeholder="Email Address"
+              className={`netflix-transparent-input ${
+                error ? 'border-red-500' : ''
               }`}
               aria-invalid={error ? 'true' : 'false'}
               aria-describedby={error ? 'email-error' : undefined}
               required
             />
-            <Button
+            <button
               type="submit"
-              size="lg"
-              className="bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-4 text-lg whitespace-nowrap rounded-lg transition-colors"
-              loading={isSubmitting}
+              className="netflix-get-started-btn"
               disabled={!email.trim() || isSubmitting}
             >
-              {ctaText}
-            </Button>
+              {isSubmitting ? 'Please wait...' : 'Get Started'}
+            </button>
           </div>
 
           {/* Error Message */}
@@ -142,6 +159,6 @@ export function HeroSection({
           )}
         </form>
       </div>
-    </section>
+    </div>
   )
 }

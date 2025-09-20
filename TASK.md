@@ -176,12 +176,62 @@ TypeScript: ✅ STRICT mode with no errors
 - **Dependencies**: All Phase 1 requirements met
 - **Focus**: Netflix-style landing page + complete auth flows
 - **Timeline**: Ready for immediate start
+- **UI Workflow**: Using Stitch → Claude Code collaborative approach
 
 ### Phase 2 Requirements Gathering
-- **Design references**: Landing page examples needed
-- **Brand assets**: QALA logo and visual identity
+- **UI Generation**: Create designs in Stitch, then pass code to Claude for implementation
+- **Brand assets**: QALA logo and visual identity for Stitch designs
 - **Content**: Copy for landing page and auth flows
 - **UX flows**: Detailed authentication journey mapping
+
+---
+
+## 🎨 NEW UI DEVELOPMENT WORKFLOW
+
+### Stitch → Claude Code Integration Process
+
+**Step 1: UI Generation (User)**
+- Design complete UI components in Stitch
+- Export clean, semantic HTML/CSS code
+- Include all interactive states and responsive behavior
+
+**Step 2: Code Handoff (User → Claude)**
+- Pass Stitch-generated code to Claude Code
+- Provide context about intended functionality
+- Specify any custom requirements or integrations needed
+
+**Step 3: Analysis & Planning (Claude)**
+- Analyze Stitch code structure and design patterns
+- Plan integration with existing codebase architecture
+- Identify TypeScript types and component patterns needed
+- Create implementation plan that fits QALA's tech stack
+
+**Step 4: Implementation (Claude)**
+- Convert Stitch code to TypeScript React components
+- Integrate with existing TailwindCSS/Radix UI setup
+- Add proper type definitions and validation
+- Ensure compatibility with Next.js App Router
+- Follow CLAUDE.md code standards and patterns
+
+**Step 5: Integration & Testing (Claude)**
+- Connect UI to backend APIs and state management
+- Add proper error handling and loading states
+- Implement accessibility features (WCAG 2.1 Level AA)
+- Write tests following TDD methodology
+- Ensure responsive design works across devices
+
+### Benefits of This Approach
+- **Better UI Design**: Stitch provides professional design capabilities
+- **Faster Development**: Skip the visual design iteration process
+- **Consistent Integration**: Claude ensures proper code structure and standards
+- **Type Safety**: Automatic TypeScript conversion and validation
+- **Testing Coverage**: Comprehensive test suite for all UI components
+
+### Implementation Guidelines
+- All Stitch designs should use QALA brand colors from globals.css
+- Components should be designed mobile-first for responsive implementation
+- Interactive states (hover, focus, loading) should be included in Stitch designs
+- Claude will adapt all code to match existing component patterns and architecture
 
 ---
 
@@ -196,7 +246,7 @@ TypeScript: ✅ STRICT mode with no errors
 
 **Phase 1 Achievement**: Rock-solid foundation with production-ready infrastructure, comprehensive testing, operational database, and working authentication system.
 
-**Next Action**: Begin Phase 2 development with requirements gathering for landing page and authentication UX.
+**Next Action**: Begin Phase 2 development using new Stitch → Claude Code workflow for UI components.
 
 ---
 

@@ -25,7 +25,7 @@ describe('HeroSection', () => {
       expect(screen.getByText('Test Pricing')).toBeInTheDocument()
       expect(screen.getByText('Test Subheadline')).toBeInTheDocument()
       expect(
-        screen.getByPlaceholderText('Enter your email for 7 day free trial')
+        screen.getByPlaceholderText('Email Address')
       ).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Get Started' })).toBeInTheDocument()
     })
@@ -41,7 +41,7 @@ describe('HeroSection', () => {
     it('renders gradient background when no image provided', () => {
       const { container } = render(<HeroSection {...defaultProps} />)
 
-      const gradientBg = container.querySelector('.bg-gradient-to-br')
+      const gradientBg = container.querySelector('.netflix-hero-background')
       expect(gradientBg).toBeInTheDocument()
     })
   })
@@ -51,7 +51,7 @@ describe('HeroSection', () => {
       const user = userEvent.setup()
       render(<HeroSection {...defaultProps} />)
 
-      const emailInput = screen.getByPlaceholderText('Enter your email for 7 day free trial')
+      const emailInput = screen.getByPlaceholderText('Email Address')
       const submitButton = screen.getByRole('button', { name: 'Get Started' })
 
       await user.type(emailInput, 'notanemail')
@@ -77,7 +77,7 @@ describe('HeroSection', () => {
       const user = userEvent.setup()
       render(<HeroSection {...defaultProps} />)
 
-      const emailInput = screen.getByPlaceholderText('Enter your email for 7 day free trial')
+      const emailInput = screen.getByPlaceholderText('Email Address')
       const submitButton = screen.getByRole('button', { name: 'Get Started' })
 
       // Trigger error
@@ -100,7 +100,7 @@ describe('HeroSection', () => {
 
       render(<HeroSection {...defaultProps} />)
 
-      const emailInput = screen.getByPlaceholderText('Enter your email for 7 day free trial')
+      const emailInput = screen.getByPlaceholderText('Email Address')
       const submitButton = screen.getByRole('button', { name: 'Get Started' })
 
       await user.type(emailInput, 'test@example.com')
@@ -116,7 +116,7 @@ describe('HeroSection', () => {
 
       render(<HeroSection {...defaultProps} />)
 
-      const emailInput = screen.getByPlaceholderText('Enter your email for 7 day free trial')
+      const emailInput = screen.getByPlaceholderText('Email Address')
       const submitButton = screen.getByRole('button', { name: 'Get Started' })
 
       await user.type(emailInput, 'test@example.com')
@@ -135,7 +135,7 @@ describe('HeroSection', () => {
 
       render(<HeroSection {...defaultProps} />)
 
-      const emailInput = screen.getByPlaceholderText('Enter your email for 7 day free trial')
+      const emailInput = screen.getByPlaceholderText('Email Address')
       const submitButton = screen.getByRole('button', { name: 'Get Started' })
 
       await user.type(emailInput, 'test@example.com')
@@ -158,7 +158,7 @@ describe('HeroSection', () => {
 
       render(<HeroSection {...defaultProps} />)
 
-      const emailInput = screen.getByPlaceholderText('Enter your email for 7 day free trial')
+      const emailInput = screen.getByPlaceholderText('Email Address')
       const submitButton = screen.getByRole('button', { name: 'Get Started' })
 
       await user.type(emailInput, 'test@example.com')
@@ -182,7 +182,7 @@ describe('HeroSection', () => {
       const user = userEvent.setup()
       render(<HeroSection {...defaultProps} />)
 
-      const emailInput = screen.getByPlaceholderText('Enter your email for 7 day free trial')
+      const emailInput = screen.getByPlaceholderText('Email Address')
       const submitButton = screen.getByRole('button', { name: 'Get Started' })
 
       await user.type(emailInput, 'test@example.com')
@@ -200,7 +200,7 @@ describe('HeroSection', () => {
 
       render(<HeroSection {...defaultProps} />)
 
-      const emailInput = screen.getByPlaceholderText('Enter your email for 7 day free trial')
+      const emailInput = screen.getByPlaceholderText('Email Address')
       const submitButton = screen.getByRole('button', { name: 'Get Started' })
 
       await user.type(emailInput, 'test@example.com')
@@ -219,7 +219,7 @@ describe('HeroSection', () => {
       const user = userEvent.setup()
       render(<HeroSection {...defaultProps} />)
 
-      const emailInput = screen.getByPlaceholderText('Enter your email for 7 day free trial')
+      const emailInput = screen.getByPlaceholderText('Email Address')
       const submitButton = screen.getByRole('button', { name: 'Get Started' })
 
       await user.type(emailInput, 'notanemail')
@@ -236,7 +236,7 @@ describe('HeroSection', () => {
     it('has proper ARIA attributes for valid state', () => {
       render(<HeroSection {...defaultProps} />)
 
-      const emailInput = screen.getByPlaceholderText('Enter your email for 7 day free trial')
+      const emailInput = screen.getByPlaceholderText('Email Address')
       expect(emailInput).toHaveAttribute('aria-invalid', 'false')
       expect(emailInput).not.toHaveAttribute('aria-describedby')
     })
@@ -249,7 +249,7 @@ describe('HeroSection', () => {
 
       render(<HeroSection {...defaultProps} />)
 
-      const emailInput = screen.getByPlaceholderText('Enter your email for 7 day free trial')
+      const emailInput = screen.getByPlaceholderText('Email Address')
       const submitButton = screen.getByRole('button', { name: 'Get Started' })
 
       await user.type(emailInput, '  test@example.com  ')
@@ -264,7 +264,7 @@ describe('HeroSection', () => {
 
       render(<HeroSection {...defaultProps} />)
 
-      const emailInput = screen.getByPlaceholderText('Enter your email for 7 day free trial')
+      const emailInput = screen.getByPlaceholderText('Email Address')
       const submitButton = screen.getByRole('button', { name: 'Get Started' })
 
       await user.type(emailInput, '  Test@EXAMPLE.COM  ')

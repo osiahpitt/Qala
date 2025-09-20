@@ -68,31 +68,32 @@ Complete step-by-step development plan for QALA language exchange platform. Foll
 
 ## Phase 3: Landing Page & UI Foundation
 
-### 3.1 Landing Page
+### 3.1 Landing Page (Stitch → Claude Code Workflow)
 
-- [ ] Create Netflix-style hero section
-- [ ] Build feature showcase components
-- [ ] Add testimonials/social proof section
-- [ ] Create call-to-action components
-- [ ] Implement responsive design
-- [ ] Add smooth scrolling and animations
+- [ ] **Generate UI in Stitch**: Create Netflix-style hero section with brand colors
+- [ ] **Pass code to Claude**: Provide Stitch-generated component code
+- [ ] **Analyze & plan integration**: Review code structure and plan TypeScript conversion
+- [ ] **Implement landing page**: Adapt code to Next.js App Router with proper types
+- [ ] **Integrate features**: Add feature showcase, testimonials, and CTAs using Stitch designs
+- [ ] **Optimize & test**: Ensure responsive design and smooth animations work correctly
 
-### 3.2 UI System
+### 3.2 UI System (Stitch → Claude Code Workflow)
 
-- [ ] Create design tokens and theme configuration
-- [ ] Build reusable component library
-- [ ] Implement dark mode support
-- [ ] Create loading states and error boundaries
-- [ ] Build notification/toast system
-- [ ] Ensure WCAG 2.1 Level AA compliance
+- [ ] **Generate design system in Stitch**: Create comprehensive component library
+- [ ] **Pass components to Claude**: Provide all UI component code from Stitch
+- [ ] **Analyze component structure**: Plan integration with existing TailwindCSS/Radix setup
+- [ ] **Implement TypeScript components**: Convert to properly typed React components
+- [ ] **Add functionality**: Integrate dark mode, loading states, error boundaries
+- [ ] **Ensure accessibility**: Verify WCAG 2.1 Level AA compliance in implemented components
 
-### 3.3 Navigation & Layout
+### 3.3 Navigation & Layout (Stitch → Claude Code Workflow)
 
-- [ ] Create main navigation component
-- [ ] Build responsive sidebar/mobile menu
-- [ ] Implement breadcrumb navigation
-- [ ] Create footer with legal links
-- [ ] Add user menu and profile dropdown
+- [ ] **Design navigation in Stitch**: Create main nav, mobile menu, breadcrumbs
+- [ ] **Pass navigation code to Claude**: Provide complete navigation component code
+- [ ] **Plan integration strategy**: Analyze routing needs and state management
+- [ ] **Implement navigation system**: Convert to Next.js App Router compatible components
+- [ ] **Add interactive features**: User menus, dropdowns, responsive behavior
+- [ ] **Test & optimize**: Ensure proper routing and mobile responsiveness
 
 ## Phase 4: Real-time Matching System
 
@@ -136,14 +137,14 @@ Complete step-by-step development plan for QALA language exchange platform. Foll
 - [ ] Implement adaptive bitrate: 720p → 480p → audio-only based on connection quality
 - [ ] Add P2P connection timeout (30s initial, 10s reconnect) with fallback to new match
 
-### 5.2 Video Call Interface
+### 5.2 Video Call Interface (Stitch → Claude Code Workflow)
 
-- [ ] Build video call UI layout
-- [ ] Create video stream components
-- [ ] Add audio/video controls (mute, camera toggle)
-- [ ] Implement call timer display
-- [ ] Create connection status indicators
-- [ ] Add full-screen video mode
+- [ ] **Design call interface in Stitch**: Create complete video call layout with controls
+- [ ] **Pass UI code to Claude**: Provide Stitch-generated video interface components
+- [ ] **Analyze integration needs**: Plan WebRTC stream integration and control logic
+- [ ] **Implement video components**: Convert to React with proper WebRTC integration
+- [ ] **Add call functionality**: Integrate audio/video controls, timer, status indicators
+- [ ] **Test & optimize**: Ensure proper video streaming and responsive design
 
 ### 5.3 Call Management
 
@@ -156,14 +157,14 @@ Complete step-by-step development plan for QALA language exchange platform. Foll
 
 ## Phase 6: In-Call Features
 
-### 6.1 Text Chat System
+### 6.1 Text Chat System (Stitch → Claude Code Workflow)
 
-- [ ] Create chat sidebar component
-- [ ] Implement real-time messaging with Socket.io
-- [ ] Add message encryption for privacy
-- [ ] Create chat history with 30-day retention
-- [ ] Add message status indicators (sent/delivered)
-- [ ] Implement emoji and basic formatting support
+- [ ] **Design chat interface in Stitch**: Create chat sidebar with message bubbles and input
+- [ ] **Pass chat UI to Claude**: Provide complete chat component code from Stitch
+- [ ] **Plan real-time integration**: Analyze Socket.io integration needs and message flow
+- [ ] **Implement chat components**: Convert to React with Socket.io real-time messaging
+- [ ] **Add chat features**: Message encryption, history, status indicators, emoji support
+- [ ] **Test & optimize**: Ensure real-time messaging works properly in video call context
 
 ### 6.2 Translation Integration
 

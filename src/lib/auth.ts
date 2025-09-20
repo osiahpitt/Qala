@@ -18,6 +18,10 @@ export interface SignUpResponse extends AuthResponse {
   emailConfirmationSent?: boolean
 }
 
+export interface OAuthResponse extends AuthResponse {
+  redirected?: boolean
+}
+
 /**
  * Sign up a new user with email verification
  */
@@ -103,6 +107,42 @@ export async function signIn(credentials: Login): Promise<AuthResponse> {
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Sign in failed',
+    }
+  }
+}
+
+/**
+ * Sign in/up with Google OAuth
+ */
+export async function signInWithGoogle(): Promise<OAuthResponse> {
+  try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+    })
+
+    if (error) {
+      return {
+        success: false,
+        error: error.message,
+      }
+    }
+
+    // OAuth redirects the user, so we return success with redirected flag
+    return {
+      success: true,
+      redirected: true,
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Google sign in failed',
     }
   }
 }
