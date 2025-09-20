@@ -6,7 +6,7 @@
  * Integrates with Supabase auth and handles auth state persistence
  */
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react'
 import type { User, Session } from '@supabase/supabase-js'
 import {
   signUp,
@@ -151,7 +151,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => {
       mounted = false
     }
-  }, [fetchUserProfile])
+  }, [])
 
   /**
    * Subscribe to auth state changes
@@ -197,12 +197,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     })
 
     return () => subscription.unsubscribe()
-  }, [fetchUserProfile])
+  }, [])
 
   /**
    * Fetch user profile from database
    */
-  const fetchUserProfile = async (userId: string): Promise<void> => {
+  const fetchUserProfile = useCallback(async (userId: string): Promise<void> => {
     try {
       // Get the current user data to construct the profile
       const currentUser = user || await getCurrentUser()
@@ -237,7 +237,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to fetch user profile')
     }
-  }
+  }, [user])
 
   /**
    * Sign up a new user
