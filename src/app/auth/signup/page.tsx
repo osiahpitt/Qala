@@ -3,7 +3,8 @@
 import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { SignupForm } from '@/components/SignupForm'
+import { ManualSignupForm } from '@/components/ManualSignupForm'
+import styles from './signup.module.css'
 
 function SignupContent() {
   const router = useRouter()
@@ -30,19 +31,29 @@ function SignupContent() {
 
   if (emailSent) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="max-w-md w-full mx-auto p-6">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-foreground mb-4">
-              Check Your Email
-            </h1>
-            <p className="text-foreground-muted mb-6">
-              We&apos;ve sent a verification link to {emailAddress}.
-              Click the link to verify your account and complete your profile.
+      <div className={styles.signupBody}>
+        <div className={styles.signupContainer}>
+          <div className={styles.signupBox}>
+            <h1 className={styles.signupTitle}>Check Your Email</h1>
+            <p
+              style={{
+                color: '#64748b',
+                fontSize: '1.1rem',
+                textAlign: 'center',
+                marginBottom: '1.5rem',
+              }}
+            >
+              We&apos;ve sent a verification link to {emailAddress}. Click the link to verify your
+              account and complete your profile.
             </p>
             <Link
               href="/auth/login"
-              className="text-primary hover:text-primary/80 font-medium"
+              style={{
+                color: '#3b3a2f',
+                fontWeight: '600',
+                textDecoration: 'none',
+                fontSize: '1rem',
+              }}
             >
               Back to Login
             </Link>
@@ -53,43 +64,32 @@ function SignupContent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="max-w-4xl w-full mx-auto p-6">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Join QALA
-          </h1>
-          <p className="text-foreground-muted">
-            Create your account and start practicing languages with natives
-          </p>
-        </div>
-
-        <SignupForm
-          initialEmail={initialEmail}
-          onSuccess={handleSuccess}
-          onEmailConfirmationSent={handleEmailConfirmationSent}
-        />
-      </div>
+    <div className={styles.signupBody}>
+      <ManualSignupForm
+        initialEmail={initialEmail}
+        onSuccess={handleSuccess}
+        onEmailConfirmationSent={handleEmailConfirmationSent}
+      />
     </div>
   )
 }
 
 export default function SignupPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="max-w-4xl w-full mx-auto p-6">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Join QALA
-            </h1>
-            <p className="text-foreground-muted">
-              Loading signup form...
-            </p>
+    <Suspense
+      fallback={
+        <div className={styles.signupBody}>
+          <div className={styles.signupContainer}>
+            <div className={styles.signupBox}>
+              <h1 className={styles.signupTitle}>Join QALA</h1>
+              <p style={{ color: '#64748b', fontSize: '1.1rem', textAlign: 'center' }}>
+                Loading signup form...
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <SignupContent />
     </Suspense>
   )

@@ -1,0 +1,261 @@
+/* Manual Signup Page - Exact proportions from provided HTML/CSS */
+
+/* Body: full viewport with user-provided forest path background */
+.signupBody {
+  margin: 0;
+  font-family: 'Roboto', Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url('/Bf3EhsQdUry_xFMpMxrbp.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: #3b3a2f; /* soft dark brown-green text */
+  position: relative;
+  z-index: 0;
+}
+
+/* Container: center form flexbox - EXACT original proportions */
+.signupContainer {
+  width: 100vw;
+  max-width: 480px;
+  padding: 2.5rem 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Form box with natural translucent background - EXACT original proportions */
+.signupBox {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 16px;
+  box-shadow: 0 7px 25px rgba(78, 65, 41, 0.25);
+  padding: 4rem 3rem 3rem 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.6rem;
+  color: #3b3a2f;
+}
+
+/* Title styling with deep earthy color - EXACT original proportions */
+.signupTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  user-select: none;
+  color: #3b3a2f;
+  text-align: center;
+}
+
+/* Form layout - EXACT original proportions */
+.signupForm {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Google sign-in button - EXACT original proportions */
+.googleSigninBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  justify-content: center;
+  background: #ffdf00; /* golden yellow */
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #3b3a2f; /* dark text for contrast */
+  box-shadow: 0 6px 20px rgba(255, 223, 0, 0.6);
+  transition:
+    box-shadow 0.25s,
+    background 0.25s;
+  width: 100%;
+}
+
+.googleSigninBtn:hover,
+.googleSigninBtn:focus {
+  background: #e6c500; /* darker golden yellow */
+  box-shadow: 0 10px 30px rgba(230, 197, 0, 0.9);
+  outline: none;
+}
+
+.googleSigninBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Divider with soft lines - EXACT original proportions */
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 1.2rem 0 1.4rem 0;
+  color: #8a8b8d;
+  font-size: 1.15rem;
+  font-weight: 600;
+  user-select: none;
+}
+
+.divider span {
+  background: rgba(255, 255, 255, 0.92);
+  padding: 0 1.4rem;
+  position: relative;
+  z-index: 1;
+}
+
+.divider:before {
+  content: '';
+  display: block;
+  border-top: 1.6px solid #c1c2c3;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  z-index: 0;
+}
+
+/* Labels with earthy dark olive tone - EXACT original proportions */
+.label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #3b3a2f;
+  margin-bottom: 0.5rem;
+  display: block;
+  user-select: none;
+}
+
+/* Inputs with warm subtle shadows and rounding - EXACT original proportions */
+.input {
+  width: 100%;
+  padding: 1rem 1.1rem;
+  border: 1.8px solid #b9babd;
+  border-radius: 12px;
+  font-size: 1.15rem;
+  color: #3b3a2f;
+  background: #fafafa;
+  transition:
+    border-color 0.3s,
+    background 0.3s;
+  box-sizing: border-box;
+  box-shadow: inset 0 1px 4px rgba(178, 179, 186, 0.3);
+}
+
+.input:focus {
+  border-color: #86888b;
+  background: #fff;
+  outline: none;
+  box-shadow: 0 0 8px rgba(134, 136, 139, 0.6);
+}
+
+.input.error {
+  border-color: #ef4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+/* Signup submit button - EXACT original proportions */
+.signupBtn {
+  margin-top: 1.4rem;
+  padding: 1.1rem 0;
+  background: #ffdf00; /* golden yellow */
+  color: #3b3a2f; /* dark text for contrast */
+  border: none;
+  border-radius: 14px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 7px 22px rgba(255, 223, 0, 0.7);
+  transition:
+    background 0.3s,
+    box-shadow 0.3s;
+  user-select: none;
+  width: 100%;
+}
+
+.signupBtn:hover,
+.signupBtn:focus {
+  background: #e6c500; /* darker golden yellow */
+  box-shadow: 0 12px 39px rgba(230, 197, 0, 1);
+  outline: none;
+}
+
+.signupBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Error message styling */
+.errorMessage {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+/* Loading spinner */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #3b3a2f33;
+  border-top: 2px solid #3b3a2f;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Already have account link */
+.loginLink {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #64748b;
+  font-size: 1rem;
+}
+
+.loginLink a {
+  color: #3b3a2f;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.loginLink a:hover {
+  color: #2d2f24;
+}
+
+/* Responsive for smaller screens - EXACT original proportions */
+@media (max-width: 480px) {
+  .signupBox {
+    padding: 3rem 2rem 2rem 2rem;
+  }
+
+  .googleSigninBtn,
+  .signupBtn {
+    font-size: 1.2rem;
+    padding: 0.9rem 1.8rem;
+  }
+
+  .label {
+    font-size: 1rem;
+  }
+
+  .input {
+    font-size: 1rem;
+  }
+
+  .signupTitle {
+    font-size: 2rem;
+  }
+}
