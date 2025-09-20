@@ -30,7 +30,6 @@ export default function Home() {
         headline="Become Fluent With Natives Through Instant Video Chat"
         pricing="Free with ads, or ad free for $7.99/month. Cancel anytime."
         subheadline="Ready to match? Enter your email to get started."
-        ctaText="Get Started"
         onEmailSubmit={handleEmailSubmit}
       />
     </main>
