@@ -205,7 +205,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const fetchUserProfile = useCallback(async (userId: string): Promise<void> => {
     try {
       // Get the current user data to construct the profile
-      const currentUser = user || await getCurrentUser()
+      const currentUser = await getCurrentUser()
 
       if (!currentUser) {
         throw new Error('User not found')
@@ -237,7 +237,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to fetch user profile')
     }
-  }, [user])
+  }, [])
 
   /**
    * Sign up a new user
