@@ -244,7 +244,8 @@ const PORT = process.env.PORT || 3001;
 
 server.listen(PORT, () => {
   logger.info(`🚀 QALA Signaling Server running on port ${PORT}`);
-  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`)
+  logger.info('Server starting with updated environment variables');
 
   // Initialize cleanup tasks
   setInterval(async () => {
