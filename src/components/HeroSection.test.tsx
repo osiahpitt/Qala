@@ -127,7 +127,7 @@ describe('HeroSection', () => {
 
     it('shows loading state during submission', async () => {
       const user = userEvent.setup()
-      let resolveSubmission: () => void
+      let resolveSubmission: (() => void) | undefined
       const submissionPromise = new Promise<void>((resolve) => {
         resolveSubmission = resolve
       })
@@ -192,7 +192,7 @@ describe('HeroSection', () => {
 
     it('disables submit button during submission', async () => {
       const user = userEvent.setup()
-      let resolveSubmission: () => void
+      let resolveSubmission: (() => void) | undefined
       const submissionPromise = new Promise<void>((resolve) => {
         resolveSubmission = resolve
       })

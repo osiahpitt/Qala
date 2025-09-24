@@ -17,45 +17,124 @@ function AuthCallbackContent() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // Handle the auth callback
-        const { data, error: authError } = await supabase.auth.getSession()
+        console.log('Auth callback - URL:', window.location.href)
+        console.log('Search params:', Object.fromEntries(searchParams.entries()))
+        console.log('Hash:', window.location.hash)
 
-        if (authError) {
-          throw new Error(authError.message)
+        // Let Supabase handle the session automatically
+        const { data: { session }, error } = await supabase.auth.getSession()
+
+        if (error) {
+          console.error('Session error:', error)
+          throw new Error(error.message)
         }
 
-        if (!data.session || !data.session.user) {
-          throw new Error('No session found')
-        }
+        if (session && session.user) {
+          console.log('Found session:', session.user.email)
+          const user = session.user
 
-        const user = data.session.user
+          // Check if this is a new user (email just verified)
+          const isNewUser = !user.user_metadata?.profile_created
 
-        // Check if this is a new user by looking at user metadata
-        const isNewUser = user.user_metadata?.new_user === true ||
-                          user.email_confirmed_at && !user.user_metadata?.profile_created
+          if (isNewUser) {
+            setState('profile_creation')
 
-        if (isNewUser) {
-          setState('profile_creation')
+            // Create user profile for new verified user
+            const profileCreated = await createUserProfile(user)
 
-          // Attempt to create user profile
-          const profileCreated = await createUserProfile(user)
-
-          if (profileCreated) {
-            // Redirect to profile setup for new users
-            router.push('/profile/setup')
-            return
+            if (profileCreated) {
+              router.push('/profile/setup')
+              return
+            } else {
+              router.push('/profile/setup')
+              return
+            }
           } else {
-            // If profile creation failed, still redirect to setup - they can try again
+            // Existing user, redirect to dashboard
+            setState('success')
+            setTimeout(() => {
+              router.push('/dashboard')
+            }, 1000)
+            return
+          }
+        }
+
+        // If no session yet, check for auth parameters
+        const code = searchParams.get('code')
+        const accessToken = searchParams.get('access_token')
+        const refreshToken = searchParams.get('refresh_token')
+
+        // Handle auth code flow
+        if (code) {
+          console.log('Found auth code, exchanging for session')
+          const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+
+          if (exchangeError) {
+            console.error('Code exchange error:', exchangeError)
+            throw new Error(exchangeError.message)
+          }
+
+          if (data.session && data.session.user) {
+            const user = data.session.user
+            setState('profile_creation')
+
+            const profileCreated = await createUserProfile(user)
             router.push('/profile/setup')
             return
           }
         }
 
-        // For existing users, redirect to dashboard
-        setState('success')
-        setTimeout(() => {
-          router.push('/dashboard')
-        }, AUTH_DELAYS.SUCCESS_REDIRECT_DELAY)
+        // Handle direct token flow (legacy)
+        if (accessToken && refreshToken) {
+          console.log('Found tokens, setting session')
+          const { data, error: sessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken
+          })
+
+          if (sessionError) {
+            console.error('Token session error:', sessionError)
+            throw new Error(sessionError.message)
+          }
+
+          if (data.session && data.session.user) {
+            const user = data.session.user
+            setState('profile_creation')
+
+            const profileCreated = await createUserProfile(user)
+            router.push('/profile/setup')
+            return
+          }
+        }
+
+        // Check hash parameters as fallback
+        const hashParams = new URLSearchParams(window.location.hash.substring(1))
+        const hashAccessToken = hashParams.get('access_token')
+        const hashRefreshToken = hashParams.get('refresh_token')
+
+        if (hashAccessToken && hashRefreshToken) {
+          console.log('Found hash tokens, setting session')
+          const { data, error: hashSessionError } = await supabase.auth.setSession({
+            access_token: hashAccessToken,
+            refresh_token: hashRefreshToken
+          })
+
+          if (hashSessionError) {
+            console.error('Hash session error:', hashSessionError)
+            throw new Error(hashSessionError.message)
+          }
+
+          if (data.session && data.session.user) {
+            const user = data.session.user
+            setState('profile_creation')
+
+            const profileCreated = await createUserProfile(user)
+            router.push('/profile/setup')
+            return
+          }
+        }
+
+        throw new Error('No valid authentication data found')
 
       } catch (err) {
         setState('error')

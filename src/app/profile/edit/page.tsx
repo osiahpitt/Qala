@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { useAuth } from '@/contexts/AuthContext'
 import {
   Button,
@@ -140,7 +141,7 @@ export default function ProfileEditPage() {
     fullName: '',
     nativeLanguage: '',
     targetLanguages: [],
-    age: 16,
+    age: USER_VALIDATION.MINIMUM_AGE,
     gender: '',
     country: '',
     timezone: '',
@@ -159,7 +160,7 @@ export default function ProfileEditPage() {
         fullName: profile.fullName || '',
         nativeLanguage: profile.nativeLanguage || '',
         targetLanguages: profile.targetLanguages || [],
-        age: profile.age || 16,
+        age: profile.age || USER_VALIDATION.MINIMUM_AGE,
         gender: profile.gender || '',
         country: profile.country || '',
         timezone: profile.timezone || '',
@@ -303,8 +304,11 @@ export default function ProfileEditPage() {
 
   const handleCancel = () => {
     if (hasChanges) {
+      // eslint-disable-next-line no-alert
       const confirmDiscard = window.confirm('You have unsaved changes. Are you sure you want to discard them?')
-      if (!confirmDiscard) return
+      if (!confirmDiscard) {
+        return
+      }
     }
     router.back()
   }
@@ -313,7 +317,7 @@ export default function ProfileEditPage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
           <p className="text-muted-foreground mt-2">Loading profile...</p>
         </div>
       </div>
@@ -346,9 +350,11 @@ export default function ProfileEditPage() {
                 <div className="relative">
                   <div className="w-32 h-32 rounded-full bg-muted flex items-center justify-center overflow-hidden">
                     {formData.avatarUrl ? (
-                      <img
+                      <Image
                         src={formData.avatarUrl}
                         alt="Profile"
+                        width={128}
+                        height={128}
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           e.currentTarget.style.display = 'none'
@@ -440,7 +446,7 @@ export default function ProfileEditPage() {
                       label="Age"
                       type="number"
                       value={formData.age}
-                      onChange={(e) => handleInputChange('age', parseInt(e.target.value) || 16)}
+                      onChange={(e) => handleInputChange('age', parseInt(e.target.value) || USER_VALIDATION.MINIMUM_AGE)}
                       min={USER_VALIDATION.MINIMUM_AGE}
                       max={USER_VALIDATION.MAXIMUM_AGE}
                       required
@@ -530,7 +536,7 @@ export default function ProfileEditPage() {
                   >
                     {isSubmitting ? (
                       <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2"></div>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2" />
                         Saving...
                       </>
                     ) : (

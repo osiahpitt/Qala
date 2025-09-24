@@ -1,13 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import {
   isProtectedRoute,
   isAuthRoute,
   hasCompletedProfile,
   canAccessRoute,
   authMiddleware,
-  PROTECTED_ROUTES,
-  AUTH_ROUTES,
   PROFILE_SETUP_ROUTE,
   LOGIN_ROUTE,
 } from './middleware'
@@ -42,6 +40,7 @@ const mockCompleteUser = {
   id: 'user-123',
   email: 'test@example.com',
   email_confirmed_at: '2024-01-01T00:00:00.000Z',
+  app_metadata: {},
   user_metadata: {
     full_name: 'Test User',
     native_language: 'en',
@@ -50,22 +49,28 @@ const mockCompleteUser = {
     country: 'USA',
     timezone: 'America/New_York',
   },
+  aud: 'authenticated',
+  created_at: '2024-01-01T00:00:00.000Z',
 }
 
 const mockIncompleteUser = {
   id: 'user-456',
   email: 'incomplete@example.com',
   email_confirmed_at: '2024-01-01T00:00:00.000Z',
+  app_metadata: {},
   user_metadata: {
     full_name: 'Incomplete User',
     // Missing required fields
   },
+  aud: 'authenticated',
+  created_at: '2024-01-01T00:00:00.000Z',
 }
 
 const mockUnverifiedUser = {
   id: 'user-789',
   email: 'unverified@example.com',
   email_confirmed_at: null,
+  app_metadata: {},
   user_metadata: {
     full_name: 'Unverified User',
     native_language: 'en',
@@ -74,6 +79,8 @@ const mockUnverifiedUser = {
     country: 'USA',
     timezone: 'America/New_York',
   },
+  aud: 'authenticated',
+  created_at: '2024-01-01T00:00:00.000Z',
 }
 
 // Helper function to create mock NextRequest
@@ -141,13 +148,17 @@ describe('middleware utilities', () => {
 
     it('should return false for null/undefined users', () => {
       expect(hasCompletedProfile(null)).toBe(false)
-      expect(hasCompletedProfile(undefined)).toBe(false)
+      expect(hasCompletedProfile(null)).toBe(false)
     })
 
     it('should return false for users without user_metadata', () => {
       const userWithoutMetadata = {
         id: 'user-123',
         email: 'test@example.com',
+        app_metadata: {},
+        user_metadata: {},
+        aud: 'authenticated',
+        created_at: '2024-01-01T00:00:00.000Z',
       }
       expect(hasCompletedProfile(userWithoutMetadata)).toBe(false)
     })
@@ -272,6 +283,7 @@ describe('authMiddleware', () => {
         }),
       },
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(createServerClient).mockReturnValue(mockSupabase as any)
 
     const request = createMockRequest('/dashboard')
@@ -296,6 +308,7 @@ describe('authMiddleware', () => {
         }),
       },
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(createServerClient).mockReturnValue(mockSupabase as any)
 
     const request = createMockRequest('/dashboard')
@@ -319,6 +332,7 @@ describe('authMiddleware', () => {
         }),
       },
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(createServerClient).mockReturnValue(mockSupabase as any)
 
     const request = createMockRequest('/dashboard')
@@ -342,6 +356,7 @@ describe('authMiddleware', () => {
         }),
       },
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(createServerClient).mockReturnValue(mockSupabase as any)
 
     const request = createMockRequest('/dashboard')
@@ -364,6 +379,7 @@ describe('authMiddleware', () => {
         }),
       },
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(createServerClient).mockReturnValue(mockSupabase as any)
 
     const request = createMockRequest('/auth/login')
@@ -387,6 +403,7 @@ describe('authMiddleware', () => {
         }),
       },
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(createServerClient).mockReturnValue(mockSupabase as any)
 
     const request = createMockRequest('/auth/login', { redirectTo: '/profile' })
@@ -410,6 +427,7 @@ describe('authMiddleware', () => {
         }),
       },
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(createServerClient).mockReturnValue(mockSupabase as any)
 
     const request = createMockRequest('/profile/setup')
@@ -432,6 +450,7 @@ describe('authMiddleware', () => {
         }),
       },
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(createServerClient).mockReturnValue(mockSupabase as any)
 
     const request = createMockRequest('/profile/setup')
@@ -448,6 +467,7 @@ describe('authMiddleware', () => {
         getSession: vi.fn().mockRejectedValue(new Error('Auth error')),
       },
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(createServerClient).mockReturnValue(mockSupabase as any)
 
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})

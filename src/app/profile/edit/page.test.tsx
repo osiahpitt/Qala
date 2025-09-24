@@ -49,6 +49,7 @@ const mockAuthContext = {
   error: null,
   signUp: vi.fn(),
   signIn: vi.fn(),
+  signInWithGoogle: vi.fn(),
   signOut: vi.fn(),
   resetPassword: vi.fn(),
   updatePassword: vi.fn(),
@@ -299,7 +300,8 @@ describe('ProfileEditPage', () => {
     render(<ProfileEditPage />)
 
     // Camera icon should be visible
-    expect(screen.getByTestId('lucide-camera') || screen.querySelector('[data-testid="lucide-camera"]')).toBeTruthy()
+    const cameraIcon = document.querySelector('[data-testid="lucide-camera"]')
+    expect(cameraIcon).toBeTruthy()
   })
 
   it('should prevent selecting native language as target language', async () => {

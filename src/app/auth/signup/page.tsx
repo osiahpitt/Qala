@@ -30,33 +30,26 @@ function SignupContent() {
   }
 
   if (emailSent) {
+    // Redirect to verification code page instead of showing email waiting page
+    router.push(`/auth/verify-code?email=${encodeURIComponent(emailAddress)}`)
     return (
       <div className={styles.signupBody}>
         <div className={styles.signupContainer}>
           <div className={styles.signupBox}>
-            <h1 className={styles.signupTitle}>Check Your Email</h1>
-            <p
-              style={{
-                color: '#64748b',
-                fontSize: '1.1rem',
-                textAlign: 'center',
-                marginBottom: '1.5rem',
-              }}
-            >
-              We&apos;ve sent a verification link to {emailAddress}. Click the link to verify your
-              account and complete your profile.
-            </p>
-            <Link
-              href="/auth/login"
-              style={{
-                color: '#3b3a2f',
-                fontWeight: '600',
-                textDecoration: 'none',
-                fontSize: '1rem',
-              }}
-            >
-              Back to Login
-            </Link>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                border: '3px solid #f3f3f3',
+                borderTop: '3px solid #e5b567',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto 20px'
+              }} />
+              <p style={{ color: '#64748b', fontSize: '1.1rem' }}>
+                Redirecting to verification...
+              </p>
+            </div>
           </div>
         </div>
       </div>

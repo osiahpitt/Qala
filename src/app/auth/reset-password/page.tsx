@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { updatePassword } from '@/lib/auth'
 import { newPasswordSchema, type NewPassword } from '@/lib/schemas/user'
+import { AUTH_DELAYS } from '@/lib/constants'
 import { Button } from '@/components/ui/Button'
 
 function ResetPasswordContent() {
@@ -48,7 +49,7 @@ function ResetPasswordContent() {
         setIsSuccess(true)
         setTimeout(() => {
           router.push('/auth/login')
-        }, 3000)
+        }, AUTH_DELAYS.PASSWORD_RESET_SUCCESS_DELAY)
       } else {
         setErrors({ submit: result.error || 'Failed to update password' })
       }

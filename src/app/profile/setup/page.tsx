@@ -137,7 +137,7 @@ export default function ProfileSetupPage() {
     fullName: user?.user_metadata?.full_name || '',
     nativeLanguage: user?.user_metadata?.native_language || '',
     targetLanguages: user?.user_metadata?.target_languages || [],
-    age: user?.user_metadata?.age || 16,
+    age: user?.user_metadata?.age || USER_VALIDATION.MINIMUM_AGE,
     gender: user?.user_metadata?.gender || '',
     country: user?.user_metadata?.country || '',
     timezone: user?.user_metadata?.timezone || '',
@@ -322,7 +322,7 @@ export default function ProfileSetupPage() {
                   label="Age"
                   type="number"
                   value={formData.age}
-                  onChange={(e) => handleInputChange('age', parseInt(e.target.value) || 16)}
+                  onChange={(e) => handleInputChange('age', parseInt(e.target.value) || USER_VALIDATION.MINIMUM_AGE)}
                   min={USER_VALIDATION.MINIMUM_AGE}
                   max={USER_VALIDATION.MAXIMUM_AGE}
                   required

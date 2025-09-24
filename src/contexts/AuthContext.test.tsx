@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor, act } from '@testing-library/react'
 import { renderHook } from '@testing-library/react'
-import type { User, Session } from '@supabase/supabase-js'
-import { AuthProvider, useAuth, type UserProfile } from './AuthContext'
+import type { User, Session, AuthChangeEvent } from '@supabase/supabase-js'
+import { AuthProvider, useAuth } from './AuthContext'
 import * as authModule from '@/lib/auth'
 
 // Mock the auth module
@@ -25,7 +25,7 @@ const mockUser: User = {
   role: 'authenticated',
   email: 'test@example.com',
   email_confirmed_at: '2024-01-01T00:00:00.000Z',
-  phone: null,
+  phone: undefined,
   confirmed_at: '2024-01-01T00:00:00.000Z',
   last_sign_in_at: '2024-01-01T00:00:00.000Z',
   app_metadata: {},
@@ -53,25 +53,7 @@ const mockSession: Session = {
   user: mockUser,
 }
 
-const mockUserProfile: UserProfile = {
-  id: 'test-user-id',
-  email: 'test@example.com',
-  fullName: 'Test User',
-  avatarUrl: undefined,
-  nativeLanguage: 'en',
-  targetLanguages: ['es', 'fr'],
-  proficiencyLevels: {},
-  age: 25,
-  gender: 'male',
-  country: 'USA',
-  timezone: 'America/New_York',
-  subscriptionTier: 'free',
-  translationQuotaUsed: 0,
-  quotaResetDate: new Date().toISOString(),
-  isBanned: false,
-  createdAt: '2024-01-01T00:00:00.000Z',
-  updatedAt: '2024-01-01T00:00:00.000Z',
-}
+// Mock user profile placeholder for future tests
 
 // Test component that uses useAuth
 function TestComponent() {
@@ -105,6 +87,8 @@ describe('AuthContext', () => {
       return {
         data: {
           subscription: {
+            id: 'mock-subscription-id',
+            callback: callback as (event: AuthChangeEvent, session: Session | null) => void,
             unsubscribe: mockUnsubscribe,
           },
         },
@@ -475,7 +459,7 @@ describe('AuthContext', () => {
     it('should correctly calculate isEmailVerified', async () => {
       const userWithoutConfirmedEmail = {
         ...mockUser,
-        email_confirmed_at: null,
+        email_confirmed_at: undefined,
       }
 
       vi.mocked(authModule.getCurrentUser).mockResolvedValue(userWithoutConfirmedEmail)

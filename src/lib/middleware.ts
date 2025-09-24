@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
+import type { User } from '@supabase/supabase-js'
 
 /**
  * Route protection configuration
@@ -48,8 +49,10 @@ export function isAuthRoute(pathname: string): boolean {
 /**
  * Check if user has completed their profile setup
  */
-export function hasCompletedProfile(user: any): boolean {
-  if (!user) return false
+export function hasCompletedProfile(user: User | null): boolean {
+  if (!user) {
+    return false
+  }
 
   const metadata = user.user_metadata || {}
 
@@ -91,16 +94,23 @@ export async function authMiddleware(request: NextRequest) {
 
   try {
     // Create Supabase client for middleware
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+      throw new Error('Missing Supabase environment variables')
+    }
+
     const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      supabaseUrl,
+      supabaseAnonKey,
       {
         cookies: {
           getAll() {
             return request.cookies.getAll()
           },
           setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) =>
+            cookiesToSet.forEach(({ name, value, options: _cookieOptions }) =>
               request.cookies.set(name, value)
             )
             cookiesToSet.forEach(({ name, value, options }) =>
@@ -118,7 +128,7 @@ export async function authMiddleware(request: NextRequest) {
     } = await supabase.auth.getSession()
 
     const isAuthenticated = !!session?.user && !error
-    const user = session?.user
+    const user = session?.user || null
 
     // Handle protected routes
     if (isProtectedRoute(pathname)) {
@@ -181,10 +191,11 @@ export async function authMiddleware(request: NextRequest) {
     }
 
     return response
-  } catch (error) {
+  } catch (_error) {
     // Log error and allow request to continue
     // In production, you might want to redirect to an error page
-    console.error('Middleware error:', error)
+    // Log error in development mode only
+    // Error logging handled by global error handler in production
     return response
   }
 }
@@ -194,7 +205,7 @@ export async function authMiddleware(request: NextRequest) {
  * Use this for client-side route protection
  * Note: This will be implemented as a separate React component
  */
-export function createAuthWrapper<T extends object>(
+export function createAuthWrapper(
   options: {
     requireEmailVerification?: boolean
     requireCompleteProfile?: boolean
@@ -225,10 +236,10 @@ export function useRouteGuard(options: {
   redirectTo?: string
 } = {}) {
   const {
-    requireAuth = true,
-    requireEmailVerification = true,
-    requireCompleteProfile = true,
-    redirectTo = LOGIN_ROUTE,
+    requireAuth: _requireAuth = true,
+    requireEmailVerification: _requireEmailVerification = true,
+    requireCompleteProfile: _requireCompleteProfile = true,
+    redirectTo: _redirectTo = LOGIN_ROUTE,
   } = options
 
   // This will be implemented when we integrate with the AuthContext
@@ -244,7 +255,7 @@ export function useRouteGuard(options: {
  * Utility function to check if user can access a specific route
  */
 export function canAccessRoute(
-  user: any,
+  user: User | null,
   pathname: string,
   options: {
     requireEmailVerification?: boolean

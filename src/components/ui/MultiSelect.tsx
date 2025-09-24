@@ -57,7 +57,9 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
     }, [])
 
     const handleOptionToggle = (optionValue: string) => {
-      if (disabled) return
+      if (disabled) {
+        return
+      }
 
       const isSelected = value.includes(optionValue)
 
@@ -133,7 +135,7 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectProps>(
             <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-60 overflow-auto">
               {options.map(option => {
                 const isSelected = value.includes(option.value)
-                const isDisabled = option.disabled || disabled || (!isSelected && isMaxReached)
+                const isDisabled = Boolean(option.disabled || disabled || (!isSelected && isMaxReached))
 
                 return (
                   <button

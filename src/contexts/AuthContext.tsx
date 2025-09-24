@@ -7,7 +7,7 @@
  */
 
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react'
-import type { User, Session } from '@supabase/supabase-js'
+import type { User, Session, AuthChangeEvent } from '@supabase/supabase-js'
 import {
   signUp,
   signIn,
@@ -22,7 +22,6 @@ import {
   type AuthResponse,
   type SignUpResponse,
   type OAuthResponse,
-  type AuthEventType,
 } from '@/lib/auth'
 import type { UserRegistration, Login } from '@/lib/schemas/user'
 
@@ -82,6 +81,10 @@ export interface AuthContextType extends AuthState {
   // State management
   clearError: () => void
   error: string | null
+
+  // Aliases for backward compatibility
+  userProfile: UserProfile | null
+  loading: boolean
 }
 
 /**
@@ -111,93 +114,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const isAuthenticated = !!user && !!session
   const isEmailVerified = !!user?.email_confirmed_at
   const hasCompletedProfile = !!profile && !!profile.fullName
-
-  /**
-   * Initialize auth state on mount
-   */
-  useEffect(() => {
-    let mounted = true
-
-    const initializeAuth = async () => {
-      try {
-        // Get current session and user
-        const [currentUser, currentSession] = await Promise.all([
-          getCurrentUser(),
-          getCurrentSession(),
-        ])
-
-        if (!mounted) return
-
-        setUser(currentUser)
-        setSession(currentSession)
-
-        // If user exists, fetch their profile
-        if (currentUser) {
-          await fetchUserProfile(currentUser.id)
-        }
-      } catch (error) {
-        if (mounted) {
-          setError(error instanceof Error ? error.message : 'Failed to initialize auth')
-        }
-      } finally {
-        if (mounted) {
-          setIsLoading(false)
-        }
-      }
-    }
-
-    initializeAuth()
-
-    return () => {
-      mounted = false
-    }
-  }, [])
-
-  /**
-   * Subscribe to auth state changes
-   */
-  useEffect(() => {
-    const {
-      data: { subscription },
-    } = onAuthStateChange(async (event: AuthEventType, session: Session | null) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-
-      // Handle auth events
-      switch (event) {
-        case 'SIGNED_IN':
-          if (session?.user) {
-            await fetchUserProfile(session.user.id)
-          }
-          setError(null)
-          break
-
-        case 'SIGNED_OUT':
-          setProfile(null)
-          setError(null)
-          break
-
-        case 'TOKEN_REFRESHED':
-          if (session?.user) {
-            await fetchUserProfile(session.user.id)
-          }
-          break
-
-        case 'USER_UPDATED':
-          if (session?.user) {
-            await fetchUserProfile(session.user.id)
-          }
-          break
-
-        default:
-          break
-      }
-
-      setIsLoading(false)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
 
   /**
    * Fetch user profile from database
@@ -238,6 +154,95 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setError(error instanceof Error ? error.message : 'Failed to fetch user profile')
     }
   }, [])
+
+  /**
+   * Initialize auth state on mount
+   */
+  useEffect(() => {
+    let mounted = true
+
+    const initializeAuth = async () => {
+      try {
+        // Get current session and user
+        const [currentUser, currentSession] = await Promise.all([
+          getCurrentUser(),
+          getCurrentSession(),
+        ])
+
+        if (!mounted) {
+          return
+        }
+
+        setUser(currentUser)
+        setSession(currentSession)
+
+        // If user exists, fetch their profile
+        if (currentUser) {
+          await fetchUserProfile(currentUser.id)
+        }
+      } catch (error) {
+        if (mounted) {
+          setError(error instanceof Error ? error.message : 'Failed to initialize auth')
+        }
+      } finally {
+        if (mounted) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    initializeAuth()
+
+    return () => {
+      mounted = false
+    }
+  }, [fetchUserProfile])
+
+  /**
+   * Subscribe to auth state changes
+   */
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
+      setSession(session)
+      setUser(session?.user ?? null)
+
+      // Handle auth events
+      switch (event) {
+        case 'SIGNED_IN':
+          if (session?.user) {
+            await fetchUserProfile(session.user.id)
+          }
+          setError(null)
+          break
+
+        case 'SIGNED_OUT':
+          setProfile(null)
+          setError(null)
+          break
+
+        case 'TOKEN_REFRESHED':
+          if (session?.user) {
+            await fetchUserProfile(session.user.id)
+          }
+          break
+
+        case 'USER_UPDATED':
+          if (session?.user) {
+            await fetchUserProfile(session.user.id)
+          }
+          break
+
+        default:
+          break
+      }
+
+      setIsLoading(false)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [fetchUserProfile])
 
   /**
    * Sign up a new user
@@ -494,6 +499,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     refreshProfile,
     updateProfile,
     clearError,
+
+    // Aliases for backward compatibility
+    userProfile: profile,
+    loading: isLoading,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

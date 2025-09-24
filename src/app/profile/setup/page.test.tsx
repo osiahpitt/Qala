@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
@@ -18,7 +18,14 @@ vi.mock('@/contexts/AuthContext', () => ({
 // Mock user data
 const mockUser = {
   id: 'user-123',
+  aud: 'authenticated',
+  role: 'authenticated',
   email: 'test@example.com',
+  email_confirmed_at: '2024-01-01T00:00:00.000Z',
+  phone: undefined,
+  confirmed_at: '2024-01-01T00:00:00.000Z',
+  last_sign_in_at: '2024-01-01T00:00:00.000Z',
+  app_metadata: {},
   user_metadata: {
     full_name: '',
     native_language: '',
@@ -28,6 +35,10 @@ const mockUser = {
     country: '',
     timezone: '',
   },
+  identities: [],
+  created_at: '2024-01-01T00:00:00.000Z',
+  updated_at: '2024-01-01T00:00:00.000Z',
+  is_anonymous: false,
 }
 
 const mockAuthContext = {
@@ -43,6 +54,7 @@ const mockAuthContext = {
   error: null,
   signUp: vi.fn(),
   signIn: vi.fn(),
+  signInWithGoogle: vi.fn(),
   signOut: vi.fn(),
   resetPassword: vi.fn(),
   updatePassword: vi.fn(),
@@ -218,8 +230,6 @@ describe('ProfileSetupPage', () => {
     // Note: For select components, we would need to interact with them properly
     // This is a simplified test - in a real scenario you'd need to properly
     // interact with the Select components
-
-    const submitButton = screen.getByRole('button', { name: /complete profile/i })
 
     // Mock the form data to be valid by setting up the auth context differently
     const validUserData = {

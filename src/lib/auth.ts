@@ -4,7 +4,7 @@
  */
 
 import { supabase } from './supabase'
-import type { User, Session } from '@supabase/supabase-js'
+import type { User, Session, AuthChangeEvent } from '@supabase/supabase-js'
 import type { UserRegistration, Login } from './schemas/user'
 
 export interface AuthResponse {
@@ -27,12 +27,13 @@ export interface OAuthResponse extends AuthResponse {
  */
 export async function signUp(userData: UserRegistration): Promise<SignUpResponse> {
   try {
-    // First, create the auth user
+    // Create the auth user with OTP verification (no redirect URLs)
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: userData.email,
       password: userData.password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        // Explicitly disable email confirmation redirect
+        emailRedirectTo: undefined,
         data: {
           full_name: userData.fullName,
           native_language: userData.nativeLanguage,
@@ -77,6 +78,47 @@ export async function signUp(userData: UserRegistration): Promise<SignUpResponse
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Signup failed',
+    }
+  }
+}
+
+/**
+ * Verify email with OTP code
+ */
+export async function verifyEmail(email: string, token: string): Promise<AuthResponse> {
+  try {
+    const { data, error } = await supabase.auth.verifyOtp({
+      email,
+      token,
+      type: 'signup'
+    })
+
+    if (error) {
+      return {
+        success: false,
+        error: error.message,
+      }
+    }
+
+    if (!data.user) {
+      return {
+        success: false,
+        error: 'Email verification failed',
+      }
+    }
+
+    // Create user profile after email verification
+    await createUserProfile(data.user)
+
+    return {
+      success: true,
+      user: data.user,
+      session: data.session || undefined,
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Email verification failed',
     }
   }
 }
@@ -282,7 +324,8 @@ export async function resendConfirmation(email: string): Promise<AuthResponse> {
       type: 'signup',
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        // Remove redirect to use OTP-based verification
+        emailRedirectTo: undefined,
       },
     })
 
@@ -305,17 +348,10 @@ export async function resendConfirmation(email: string): Promise<AuthResponse> {
 }
 
 /**
- * Auth event listener types
- */
-export type AuthEventType = 'SIGNED_IN' | 'SIGNED_OUT' | 'TOKEN_REFRESHED' | 'USER_UPDATED' | 'PASSWORD_RECOVERY'
-
-/**
  * Subscribe to auth state changes
  */
-export function onAuthStateChange(callback: (event: AuthEventType, session: Session | null) => void) {
-  return supabase.auth.onAuthStateChange((event, session) => {
-    callback(event as AuthEventType, session)
-  })
+export function onAuthStateChange(callback: (event: AuthChangeEvent, session: Session | null) => void) {
+  return supabase.auth.onAuthStateChange(callback)
 }
 
 /**

@@ -142,4 +142,11 @@ export const AUTH_DELAYS = {
   SUCCESS_REDIRECT_DELAY: 1000,
   ERROR_REDIRECT_DELAY: 3000,
   LOADING_SIMULATION_DELAY: 500,
+  PASSWORD_RESET_SUCCESS_DELAY: 3000,
+} as const
+
+// **UI Constants**
+export const UI_CONFIG = {
+  // Signup form steps
+  SIGNUP_TOTAL_STEPS: 3,
 } as const
