@@ -135,42 +135,15 @@ export async function signIn(credentials: Login): Promise<AuthResponse> {
     console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
     console.log('Supabase client initialized:', !!supabase)
 
-    // TEMPORARY: Mock auth for testing - remove once working
-    if (credentials.email === 'test@test.com' && credentials.password === 'test123') {
-      console.log('Using MOCK AUTH for testing')
-      return {
-        success: true,
-        user: {
-          id: 'mock-user-id',
-          email: 'test@test.com',
-          email_confirmed_at: new Date().toISOString(),
-          created_at: new Date().toISOString(),
-        } as any,
-        session: {
-          access_token: 'mock-token',
-          refresh_token: 'mock-refresh',
-          expires_in: 3600,
-          token_type: 'Bearer',
-          user: {
-            id: 'mock-user-id',
-            email: 'test@test.com',
-          } as any
-        } as any
-      }
-    }
+    // Remove mock auth to prevent interference with real authentication
 
-    // Add timeout to prevent hanging
-    const authPromise = supabase.auth.signInWithPassword({
+    console.log('Starting Supabase auth call...')
+
+    // Remove artificial timeout - let Supabase handle its own timeouts
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: credentials.email,
       password: credentials.password,
     })
-
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('Authentication timeout after 10 seconds')), 10000)
-    })
-
-    console.log('Starting Supabase auth call...')
-    const { data, error } = await Promise.race([authPromise, timeoutPromise]) as any
 
     console.log('Supabase auth call completed!')
 
@@ -182,66 +155,24 @@ export async function signIn(credentials: Login): Promise<AuthResponse> {
       sessionToken: data?.session?.access_token?.substring(0, 20) + '...'
     })
 
-    // More detailed error logging
-    if (error) {
-      console.log('Full Supabase error object:', error)
-    }
-
     if (error) {
       console.log('SignIn failed:', error.message)
+      console.log('Full Supabase error object:', error)
 
-      // If the error is "Invalid login credentials", try to create the user
+      // Provide more user-friendly error messages
+      let userFriendlyError = error.message
+
       if (error.message.includes('Invalid login credentials')) {
-        console.log('Attempting to create user account automatically...')
-
-        try {
-          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-            email: credentials.email,
-            password: credentials.password,
-            options: {
-              data: {
-                full_name: 'Test User',
-                native_language: 'en',
-                target_languages: ['es'],
-                age: 25,
-                country: 'US',
-                timezone: 'America/New_York'
-              }
-            }
-          })
-
-          console.log('Auto sign-up result:', {
-            error: signUpError?.message,
-            user: !!signUpData?.user,
-            needsVerification: !signUpData?.user?.email_confirmed_at
-          })
-
-          if (!signUpError && signUpData?.user) {
-            console.log('User created successfully! Now signing in...')
-
-            // Try signing in again
-            const { data: retryData, error: retryError } = await supabase.auth.signInWithPassword({
-              email: credentials.email,
-              password: credentials.password,
-            })
-
-            if (!retryError && retryData?.user) {
-              console.log('Retry sign-in successful!')
-              return {
-                success: true,
-                user: retryData.user,
-                session: retryData.session,
-              }
-            }
-          }
-        } catch (autoCreateError) {
-          console.log('Auto-create failed:', autoCreateError)
-        }
+        userFriendlyError = 'Invalid email or password. Please check your credentials and try again.'
+      } else if (error.message.includes('Email not confirmed')) {
+        userFriendlyError = 'Please check your email and click the verification link before signing in.'
+      } else if (error.message.includes('Too many requests')) {
+        userFriendlyError = 'Too many sign-in attempts. Please wait a moment and try again.'
       }
 
       return {
         success: false,
-        error: error.message,
+        error: userFriendlyError,
       }
     }
 

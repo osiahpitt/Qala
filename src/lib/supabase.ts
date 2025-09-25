@@ -17,7 +17,15 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
-    flowType: 'pkce'
+    flowType: 'pkce',
+    // Add production-specific settings
+    debug: process.env.NODE_ENV === 'development',
+    storageKey: 'qala-auth',
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'supabase-js-web',
+    },
   },
   realtime: {
     params: {
