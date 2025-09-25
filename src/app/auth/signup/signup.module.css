@@ -3,7 +3,7 @@
 /* Body: full viewport with user-provided forest path background */
 .signupBody {
   margin: 0;
-  font-family: 'Roboto', Arial, sans-serif;
+  font-family: var(--font-roboto), Arial, sans-serif;
   min-height: 100vh;
   display: flex;
   justify-content: center;

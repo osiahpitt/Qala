@@ -427,10 +427,9 @@ body {
 }
 
 /* Video Call Room Styles */
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap");
 
 .video-call-body {
-  font-family: "Roboto", sans-serif;
+  font-family: var(--font-roboto), sans-serif;
   user-select: none;
   min-height: 100vh;
   min-width: 100vw;
@@ -853,43 +852,56 @@ body {
 }
 
 /* Fullscreen support */
-@media (fullscreen), (fullscreen-active), (:-webkit-full-screen) {
-  .video-call-body,
-  .app-container {
-    height: 100vh;
-    width: 100vw;
-    max-width: 100vw;
-    max-height: 100vh;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-  }
+:fullscreen .video-call-body,
+:fullscreen .app-container,
+:-webkit-full-screen .video-call-body,
+:-webkit-full-screen .app-container,
+:-moz-full-screen .video-call-body,
+:-moz-full-screen .app-container {
+  height: 100vh;
+  width: 100vw;
+  max-width: 100vw;
+  max-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
 
-  .video-chat-container {
-    height: 100vh;
-  }
+:fullscreen .video-chat-container,
+:-webkit-full-screen .video-chat-container,
+:-moz-full-screen .video-chat-container {
+  height: 100vh;
+}
 
-  .video-panels {
-    height: 100vh;
-    gap: 1.5vw;
-  }
+/* Fullscreen video panel adjustments */
+:fullscreen .video-panels,
+:-webkit-full-screen .video-panels,
+:-moz-full-screen .video-panels {
+  height: 100vh;
+  gap: 1.5vw;
+}
 
-  .video-panel {
-    min-height: 100vh;
-    max-height: 100vh;
-    flex: 1 1 0;
-    max-width: none;
-  }
+:fullscreen .video-panel,
+:-webkit-full-screen .video-panel,
+:-moz-full-screen .video-panel {
+  min-height: 100vh;
+  max-height: 100vh;
+  flex: 1 1 0;
+  max-width: none;
+}
 
-  .chat-toggle-container {
-    bottom: 1.5vw;
-    right: 1.5vw;
-  }
+:fullscreen .chat-toggle-container,
+:-webkit-full-screen .chat-toggle-container,
+:-moz-full-screen .chat-toggle-container {
+  bottom: 1.5vw;
+  right: 1.5vw;
+}
 
-  .text-chat-panel {
-    width: 20vw;
-    max-height: 80vh;
-  }
+:fullscreen .text-chat-panel,
+:-webkit-full-screen .text-chat-panel,
+:-moz-full-screen .text-chat-panel {
+  width: 20vw;
+  max-height: 80vh;
 }
 
 /* Additional Video Call Component Styles */

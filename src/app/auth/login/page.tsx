@@ -27,7 +27,27 @@ function LoginContent() {
   const handleSuccess = () => {
     // Check if there's a redirect URL from middleware
     const redirectTo = searchParams.get('redirectTo') || '/dashboard'
-    router.push(redirectTo)
+    console.log('=== REDIRECT DEBUG ===')
+    console.log('Attempting to redirect to:', redirectTo)
+    console.log('Router object:', router)
+    console.log('Current location:', window.location.href)
+
+    try {
+      // Try router.push first
+      router.push(redirectTo)
+      console.log('router.push called successfully')
+
+      // Also try window.location as fallback after a delay
+      setTimeout(() => {
+        console.log('Fallback: Using window.location.href')
+        window.location.href = redirectTo
+      }, 1000)
+
+    } catch (error) {
+      console.error('router.push failed:', error)
+      // Use window.location as backup
+      window.location.href = redirectTo
+    }
   }
 
   return (

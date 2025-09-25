@@ -130,24 +130,37 @@ export async function verifyEmail(email: string, token: string): Promise<AuthRes
  */
 export async function signIn(credentials: Login): Promise<AuthResponse> {
   try {
+    console.log('=== AUTH SIGNIN DEBUG ===')
+    console.log('Attempting signIn with:', { email: credentials.email, password: '[REDACTED]' })
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email: credentials.email,
       password: credentials.password,
     })
 
+    console.log('Supabase signIn result:', {
+      error: error?.message,
+      user: !!data?.user,
+      session: !!data?.session,
+      sessionToken: data?.session?.access_token?.substring(0, 20) + '...'
+    })
+
     if (error) {
+      console.log('SignIn failed:', error.message)
       return {
         success: false,
         error: error.message,
       }
     }
 
+    console.log('SignIn successful!')
     return {
       success: true,
       user: data.user,
       session: data.session,
     }
   } catch (error) {
+    console.error('SignIn exception:', error)
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Sign in failed',

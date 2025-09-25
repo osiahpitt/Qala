@@ -16,10 +16,10 @@
         {
           "type": "header",
           "key": "host",
-          "value": "qaltalk.com"
+          "value": "qalatalk.com"
         }
       ],
-      "destination": "https://www.qaltalk.com",
+      "destination": "https://www.qalatalk.com",
       "permanent": true
     }
   ],

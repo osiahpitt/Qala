@@ -56,12 +56,21 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [queuePosition, setQueuePosition] = useState<number | null>(null);
   const [estimatedWait, setEstimatedWait] = useState<number | null>(null);
   const [currentMatch, setCurrentMatch] = useState<MatchNotification | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const [isRetrying, setIsRetrying] = useState(false);
 
   const connect = useCallback(() => {
-    if (!session?.access_token || socket?.connected) {
+    if (!session?.access_token || socket?.connected || isRetrying) {
       return;
     }
 
+    // Don't retry indefinitely - stop after 3 attempts
+    if (retryCount >= 3) {
+      setConnectionError('Unable to connect to real-time server. Video calls will not be available.');
+      return;
+    }
+
+    setIsRetrying(true);
     const serverUrl = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL || 'http://localhost:3001';
 
     const newSocket = io(serverUrl, {
@@ -70,6 +79,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       },
       transports: ['websocket', 'polling'],
       timeout: 10000,
+      reconnection: false, // Disable automatic reconnection
     });
 
     // Connection event handlers
@@ -77,6 +87,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       logger.info('Connected to signaling server');
       setIsConnected(true);
       setConnectionError(null);
+      setRetryCount(0);
+      setIsRetrying(false);
     });
 
     newSocket.on('disconnect', (reason) => {
@@ -84,12 +96,20 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       setIsConnected(false);
       setQueuePosition(null);
       setEstimatedWait(null);
+      setIsRetrying(false);
     });
 
     newSocket.on('connect_error', (error) => {
       logger.error('Socket connection error:', error);
       setConnectionError(error.message);
       setIsConnected(false);
+      setRetryCount(prev => prev + 1);
+      setIsRetrying(false);
+
+      // Don't spam the console with connection errors
+      if (retryCount === 0) {
+        console.warn('WebRTC signaling server is not available. Video calling features will be disabled.');
+      }
     });
 
     // Matching event handlers
@@ -126,7 +146,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     });
 
     setSocket(newSocket);
-  }, [session?.access_token, socket?.connected]);
+  }, [session?.access_token, socket?.connected, isRetrying, retryCount]);
 
   const disconnect = useCallback(() => {
     if (socket) {
@@ -207,9 +227,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     });
   }, [socket, isConnected]);
 
-  // Auto-connect when user is authenticated
+  // Auto-connect when user is authenticated (only if server URL is configured)
   useEffect(() => {
-    if (user && session?.access_token) {
+    const serverUrl = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL;
+
+    if (user && session?.access_token && serverUrl) {
       connect();
     } else {
       disconnect();

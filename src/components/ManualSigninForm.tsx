@@ -55,15 +55,21 @@ export function ManualSigninForm({
       const result = await signIn(validatedData)
 
       if (result.success) {
-        // Show redirecting state and wait for auth state synchronization
+        console.log('=== SIGNIN DEBUG ===')
+        console.log('Sign in successful, result:', result)
+
+        // Show redirecting state and call success immediately
         setIsSubmitting(false)
         setIsRedirecting(true)
 
-        // Wait for the auth state to be properly synchronized before redirecting
-        // This ensures middleware has access to the updated session cookies
+        console.log('Calling onSuccess callback')
+        onSuccess?.()
+
+        // Reset redirecting state after a brief delay
         setTimeout(() => {
-          onSuccess?.()
-        }, 1000)
+          console.log('Resetting isRedirecting state')
+          setIsRedirecting(false)
+        }, 3000)
       } else {
         setErrors({ submit: result.error || 'Sign in failed' })
         setIsSubmitting(false)

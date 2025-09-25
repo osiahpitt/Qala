@@ -6,7 +6,7 @@
  * Integrates with Supabase auth and handles auth state persistence
  */
 
-import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback, useMemo, ReactNode } from 'react'
 import type { User, Session, AuthChangeEvent } from '@supabase/supabase-js'
 import {
   signUp,
@@ -113,7 +113,29 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Derived state
   const isAuthenticated = !!user && !!session
   const isEmailVerified = !!user?.email_confirmed_at
-  const hasCompletedProfile = !!profile && !!profile.fullName
+
+  // Standardized profile completion logic to match middleware
+  const hasCompletedProfile = useMemo(() => {
+    if (!user) return false;
+
+    const metadata = user.user_metadata || {};
+    const requiredFields = [
+      'full_name',
+      'native_language',
+      'target_languages',
+      'age',
+      'country',
+      'timezone'
+    ];
+
+    return requiredFields.every(field => {
+      const value = metadata[field];
+      if (field === 'target_languages') {
+        return Array.isArray(value) && value.length > 0;
+      }
+      return value !== undefined && value !== null && value !== '';
+    });
+  }, [user]);
 
   /**
    * Fetch user profile from database
@@ -178,10 +200,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         // If user exists, fetch their profile
         if (currentUser) {
-          await fetchUserProfile(currentUser.id)
+          try {
+            await fetchUserProfile(currentUser.id)
+          } catch (profileError) {
+            // Don't fail initialization if profile fetch fails
+            console.warn('Failed to fetch user profile during initialization:', profileError)
+          }
         }
       } catch (error) {
         if (mounted) {
+          // Clear user state on initialization error
+          setUser(null)
+          setSession(null)
+          setProfile(null)
           setError(error instanceof Error ? error.message : 'Failed to initialize auth')
         }
       } finally {
@@ -212,7 +243,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       switch (event) {
         case 'SIGNED_IN':
           if (session?.user) {
-            await fetchUserProfile(session.user.id)
+            try {
+              await fetchUserProfile(session.user.id)
+            } catch (error) {
+              // Silently handle profile fetch errors to avoid breaking auth flow
+              console.warn('Failed to fetch user profile:', error)
+            }
           }
           setError(null)
           break
@@ -224,13 +260,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         case 'TOKEN_REFRESHED':
           if (session?.user) {
-            await fetchUserProfile(session.user.id)
+            try {
+              await fetchUserProfile(session.user.id)
+            } catch (error) {
+              console.warn('Failed to fetch user profile on token refresh:', error)
+            }
           }
           break
 
         case 'USER_UPDATED':
           if (session?.user) {
-            await fetchUserProfile(session.user.id)
+            try {
+              await fetchUserProfile(session.user.id)
+            } catch (error) {
+              console.warn('Failed to fetch user profile on user update:', error)
+            }
           }
           break
 
@@ -238,7 +282,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           break
       }
 
-      setIsLoading(false)
+      // Don't manage loading state here - let the initialization handle it
     })
 
     return () => subscription.unsubscribe()
