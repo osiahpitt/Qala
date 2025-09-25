@@ -102,12 +102,40 @@ export function ManualSignupForm({
           onSuccess?.()
         }
       } else {
-        setErrors({ submit: result.error || 'Signup failed' })
+        // Handle specific error cases for existing users
+        const errorMessage = result.error || 'Signup failed'
+
+        if (errorMessage.includes('User already registered') ||
+            errorMessage.includes('already registered') ||
+            errorMessage.includes('already exists')) {
+          setErrors({
+            email: 'An account with this email already exists.',
+            submit: 'Please use the sign-in page to access your account.'
+          })
+        } else if (errorMessage.includes('Email not confirmed') ||
+                   errorMessage.includes('not confirmed')) {
+          setErrors({
+            email: 'This email needs verification.',
+            submit: 'Please check your email and verify your account first.'
+          })
+        } else {
+          setErrors({ submit: errorMessage })
+        }
       }
     } catch (error) {
-      setErrors({
-        submit: error instanceof Error ? error.message : 'Please check your inputs and try again',
-      })
+      const errorMessage = error instanceof Error ? error.message : 'Please check your inputs and try again'
+
+      // Handle specific error cases
+      if (errorMessage.includes('User already registered') ||
+          errorMessage.includes('already registered') ||
+          errorMessage.includes('already exists')) {
+        setErrors({
+          email: 'An account with this email already exists.',
+          submit: 'Please use the sign-in page to access your account.'
+        })
+      } else {
+        setErrors({ submit: errorMessage })
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -224,6 +252,38 @@ export function ManualSignupForm({
             </div>
           )}
         </form>
+
+        {(errors.email?.includes('already exists') || errors.submit?.includes('sign-in page')) && (
+          <div style={{
+            textAlign: 'center',
+            marginTop: '1rem',
+            padding: '1rem',
+            backgroundColor: '#fff3cd',
+            border: '1px solid #ffeaa7',
+            borderRadius: '8px',
+            color: '#856404'
+          }}>
+            <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', fontWeight: '500' }}>
+              Account found with this email
+            </p>
+            <Link
+              href={`/auth/login${formData.email ? `?email=${encodeURIComponent(formData.email)}` : ''}`}
+              style={{
+                display: 'inline-block',
+                padding: '0.5rem 1rem',
+                backgroundColor: '#d39e00',
+                color: 'white',
+                borderRadius: '6px',
+                textDecoration: 'none',
+                fontSize: '0.9rem',
+                fontWeight: '500',
+                transition: 'background-color 0.2s'
+              }}
+            >
+              Sign In Instead
+            </Link>
+          </div>
+        )}
 
         <div className={styles.loginLink}>
           Already have an account? <Link href="/auth/login">Sign in</Link>

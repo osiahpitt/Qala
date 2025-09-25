@@ -20,6 +20,16 @@ export const PROTECTED_ROUTES = [
   '/settings',
 ] as const
 
+/**
+ * Routes that require email verification (subset of protected routes)
+ * Dashboard and profile are accessible to unverified users with limitations
+ */
+export const EMAIL_VERIFICATION_REQUIRED_ROUTES = [
+  '/matching',
+  '/session',
+  '/chat',
+] as const
+
 export const AUTH_ROUTES = [
   '/auth/login',
   '/auth/signup',
@@ -44,6 +54,13 @@ export function isProtectedRoute(pathname: string): boolean {
  */
 export function isAuthRoute(pathname: string): boolean {
   return AUTH_ROUTES.some(route => pathname.startsWith(route))
+}
+
+/**
+ * Check if a path requires email verification
+ */
+export function requiresEmailVerification(pathname: string): boolean {
+  return EMAIL_VERIFICATION_REQUIRED_ROUTES.some(route => pathname.startsWith(route))
 }
 
 /**
@@ -139,9 +156,10 @@ export async function authMiddleware(request: NextRequest) {
         return NextResponse.redirect(loginUrl)
       }
 
-      // Check email verification
-      if (!user?.email_confirmed_at) {
+      // Check email verification for sensitive routes only
+      if (requiresEmailVerification(pathname) && !user?.email_confirmed_at) {
         const verifyUrl = new URL('/auth/verify-email', request.url)
+        verifyUrl.searchParams.set('redirectTo', pathname)
         return NextResponse.redirect(verifyUrl)
       }
 
@@ -177,11 +195,8 @@ export async function authMiddleware(request: NextRequest) {
         return NextResponse.redirect(loginUrl)
       }
 
-      if (!user?.email_confirmed_at) {
-        // Redirect unverified users to verification page
-        const verifyUrl = new URL('/auth/verify-email', request.url)
-        return NextResponse.redirect(verifyUrl)
-      }
+      // Allow unverified users to access profile setup
+      // Email verification is not required for profile completion
 
       if (hasCompletedProfile(user)) {
         // Redirect users with complete profiles to dashboard
@@ -262,7 +277,7 @@ export function canAccessRoute(
     requireCompleteProfile?: boolean
   } = {}
 ): { canAccess: boolean; redirectTo?: string } {
-  const { requireEmailVerification = true, requireCompleteProfile = true } = options
+  const { requireCompleteProfile = true } = options
 
   // Public routes are always accessible
   if (!isProtectedRoute(pathname)) {
@@ -274,8 +289,9 @@ export function canAccessRoute(
     return { canAccess: false, redirectTo: LOGIN_ROUTE }
   }
 
-  // Check email verification
-  if (requireEmailVerification && !user.email_confirmed_at) {
+  // Check email verification for sensitive routes only
+  // Dashboard and profile routes are now accessible to unverified users
+  if (requiresEmailVerification(pathname) && !user.email_confirmed_at) {
     return { canAccess: false, redirectTo: '/auth/verify-email' }
   }
 
@@ -310,3 +326,4 @@ export const RATE_LIMITS = {
  */
 export type ProtectedRoute = (typeof PROTECTED_ROUTES)[number]
 export type AuthRoute = (typeof AUTH_ROUTES)[number]
+export type EmailVerificationRequiredRoute = (typeof EMAIL_VERIFICATION_REQUIRED_ROUTES)[number]

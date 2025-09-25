@@ -7,6 +7,8 @@ import { supabase } from './supabase'
 import type { User, Session, AuthChangeEvent } from '@supabase/supabase-js'
 import type { UserRegistration, Login } from './schemas/user'
 
+const MINIMUM_USER_AGE = 18
+
 export interface AuthResponse {
   success: boolean
   user?: User
@@ -348,6 +350,61 @@ export async function resendConfirmation(email: string): Promise<AuthResponse> {
 }
 
 /**
+ * Check if user exists by email (returns user status)
+ */
+export interface UserExistenceResult {
+  exists: boolean
+  isEmailVerified?: boolean
+  needsPasswordReset?: boolean
+  error?: string
+}
+
+export async function checkUserExists(email: string): Promise<UserExistenceResult> {
+  try {
+    // Try to sign in with a temporary password to check if user exists
+    // This will fail but we can analyze the error to determine if user exists
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password: 'temp-password-to-check-existence-' + Math.random(),
+    })
+
+    if (error) {
+      // User exists if we get "Invalid login credentials" (wrong password)
+      // User doesn't exist if we get "Email not confirmed" or similar
+      if (error.message.includes('Invalid login credentials')) {
+        return {
+          exists: true,
+          isEmailVerified: true,
+        }
+      }
+
+      if (error.message.includes('Email not confirmed')) {
+        return {
+          exists: true,
+          isEmailVerified: false,
+        }
+      }
+
+      // For any other error, assume user doesn't exist
+      return {
+        exists: false,
+      }
+    }
+
+    // If no error (very unlikely with random password), user exists and is verified
+    return {
+      exists: true,
+      isEmailVerified: true,
+    }
+  } catch (error) {
+    return {
+      exists: false,
+      error: error instanceof Error ? error.message : 'Unable to check user existence',
+    }
+  }
+}
+
+/**
  * Subscribe to auth state changes
  */
 export function onAuthStateChange(callback: (event: AuthChangeEvent, session: Session | null) => void) {
@@ -370,7 +427,7 @@ export async function createUserProfile(user: User): Promise<boolean> {
       native_language: metadata.native_language || 'en',
       target_languages: metadata.target_languages || ['es'],
       proficiency_levels: {},
-      age: metadata.age || 16,
+      age: metadata.age || MINIMUM_USER_AGE,
       gender: metadata.gender || null,
       country: metadata.country || 'USA',
       timezone: metadata.timezone || 'America/New_York',

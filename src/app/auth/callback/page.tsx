@@ -17,20 +17,17 @@ function AuthCallbackContent() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        console.log('Auth callback - URL:', window.location.href)
-        console.log('Search params:', Object.fromEntries(searchParams.entries()))
-        console.log('Hash:', window.location.hash)
+        // Note: In production, console logs are removed per project standards
 
         // Let Supabase handle the session automatically
         const { data: { session }, error } = await supabase.auth.getSession()
 
         if (error) {
-          console.error('Session error:', error)
           throw new Error(error.message)
         }
 
         if (session && session.user) {
-          console.log('Found session:', session.user.email)
+          // Session found for user
           const user = session.user
 
           // Check if this is a new user (email just verified)
@@ -40,15 +37,9 @@ function AuthCallbackContent() {
             setState('profile_creation')
 
             // Create user profile for new verified user
-            const profileCreated = await createUserProfile(user)
-
-            if (profileCreated) {
-              router.push('/profile/setup')
-              return
-            } else {
-              router.push('/profile/setup')
-              return
-            }
+            await createUserProfile(user)
+            router.push('/profile/setup')
+            return
           } else {
             // Existing user, redirect to dashboard
             setState('success')
@@ -66,11 +57,10 @@ function AuthCallbackContent() {
 
         // Handle auth code flow
         if (code) {
-          console.log('Found auth code, exchanging for session')
+          // Auth code found, exchanging for session
           const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
 
           if (exchangeError) {
-            console.error('Code exchange error:', exchangeError)
             throw new Error(exchangeError.message)
           }
 
@@ -78,7 +68,7 @@ function AuthCallbackContent() {
             const user = data.session.user
             setState('profile_creation')
 
-            const profileCreated = await createUserProfile(user)
+            await createUserProfile(user)
             router.push('/profile/setup')
             return
           }
@@ -86,14 +76,13 @@ function AuthCallbackContent() {
 
         // Handle direct token flow (legacy)
         if (accessToken && refreshToken) {
-          console.log('Found tokens, setting session')
+          // Tokens found, setting session
           const { data, error: sessionError } = await supabase.auth.setSession({
             access_token: accessToken,
             refresh_token: refreshToken
           })
 
           if (sessionError) {
-            console.error('Token session error:', sessionError)
             throw new Error(sessionError.message)
           }
 
@@ -101,7 +90,7 @@ function AuthCallbackContent() {
             const user = data.session.user
             setState('profile_creation')
 
-            const profileCreated = await createUserProfile(user)
+            await createUserProfile(user)
             router.push('/profile/setup')
             return
           }
@@ -113,14 +102,13 @@ function AuthCallbackContent() {
         const hashRefreshToken = hashParams.get('refresh_token')
 
         if (hashAccessToken && hashRefreshToken) {
-          console.log('Found hash tokens, setting session')
+          // Hash tokens found, setting session
           const { data, error: hashSessionError } = await supabase.auth.setSession({
             access_token: hashAccessToken,
             refresh_token: hashRefreshToken
           })
 
           if (hashSessionError) {
-            console.error('Hash session error:', hashSessionError)
             throw new Error(hashSessionError.message)
           }
 
@@ -128,17 +116,41 @@ function AuthCallbackContent() {
             const user = data.session.user
             setState('profile_creation')
 
-            const profileCreated = await createUserProfile(user)
+            await createUserProfile(user)
             router.push('/profile/setup')
             return
           }
         }
 
+        // If no authentication data found, check if this might be a legacy verification attempt
+        const errorDescription = searchParams.get('error_description') || searchParams.get('error')
+
+        if (errorDescription && (
+          errorDescription.includes('invalid') ||
+          errorDescription.includes('expired') ||
+          errorDescription.includes('requested path is invalid')
+        )) {
+          // Redirect to verification page with helpful message
+          router.push('/auth/verify-email?message=' + encodeURIComponent('Your verification link has expired. Please request a new one below.'))
+          return
+        }
+
         throw new Error('No valid authentication data found')
 
       } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Authentication failed'
+
+        // Check if this is a legacy verification link issue
+        if (errorMessage.includes('invalid') ||
+            errorMessage.includes('expired') ||
+            errorMessage.includes('requested path is invalid')) {
+          // Redirect to verification page with helpful message
+          router.push('/auth/verify-email?message=' + encodeURIComponent('Your verification link has expired. Please request a new one below.'))
+          return
+        }
+
         setState('error')
-        setError(err instanceof Error ? err.message : 'Authentication failed')
+        setError(errorMessage)
 
         // Redirect to login after error
         setTimeout(() => {

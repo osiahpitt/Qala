@@ -116,7 +116,7 @@ const MatchFoundModal = ({ match, onAccept, onReject }: {
 };
 
 export const MatchingInterface: React.FC = () => {
-  const { userProfile } = useAuth();
+  const { userProfile, isEmailVerified } = useAuth();
   const {
     isConnected,
     connectionError,
@@ -144,6 +144,11 @@ export const MatchingInterface: React.FC = () => {
 
   const handleStartMatching = async (preferences: MatchingPreferences) => {
     if (!userProfile) {return;}
+    if (!isEmailVerified) {
+      // Redirect to email verification
+      window.location.href = '/auth/verify-email';
+      return;
+    }
 
     setLoading(true);
     try {
@@ -229,6 +234,30 @@ export const MatchingInterface: React.FC = () => {
       <div className="bg-slate-800 rounded-lg p-6">
         <h3 className="text-xl font-semibold text-white mb-2">Connecting...</h3>
         <p className="text-slate-400">Establishing connection to matching service...</p>
+      </div>
+    );
+  }
+
+  // Show email verification required state for unverified users
+  if (!isEmailVerified) {
+    return (
+      <div className="bg-slate-800 rounded-lg p-6">
+        <h3 className="text-xl font-semibold text-white mb-4">Email Verification Required</h3>
+        <p className="text-slate-400 mb-4">
+          To start matching with language partners, you need to verify your email address first.
+          This helps us ensure the safety and authenticity of our community.
+        </p>
+        <div className="flex items-center space-x-4">
+          <a
+            href="/auth/verify-email"
+            className="bg-qala-gold hover:bg-qala-gold/90 text-slate-900 font-semibold py-2 px-4 rounded"
+          >
+            Verify Email Address
+          </a>
+          <div className="text-slate-500 text-sm">
+            Required for matching and video calls
+          </div>
+        </div>
       </div>
     );
   }

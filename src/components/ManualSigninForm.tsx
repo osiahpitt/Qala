@@ -29,6 +29,7 @@ export function ManualSigninForm({
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+  const [isRedirecting, setIsRedirecting] = useState(false)
 
   // Update email when initialEmail prop changes
   useEffect(() => {
@@ -54,9 +55,18 @@ export function ManualSigninForm({
       const result = await signIn(validatedData)
 
       if (result.success) {
-        onSuccess?.()
+        // Show redirecting state and wait for auth state synchronization
+        setIsSubmitting(false)
+        setIsRedirecting(true)
+
+        // Wait for the auth state to be properly synchronized before redirecting
+        // This ensures middleware has access to the updated session cookies
+        setTimeout(() => {
+          onSuccess?.()
+        }, 1000)
       } else {
         setErrors({ submit: result.error || 'Sign in failed' })
+        setIsSubmitting(false)
       }
     } catch (error) {
       if (error instanceof Error && 'errors' in error) {
@@ -71,9 +81,9 @@ export function ManualSigninForm({
       } else {
         setErrors({ submit: 'Please check your credentials and try again' })
       }
-    } finally {
       setIsSubmitting(false)
     }
+    // Note: We handle setIsSubmitting(false) explicitly above to manage different states properly
   }
 
   const handleGoogleSignin = async () => {
@@ -106,7 +116,7 @@ export function ManualSigninForm({
             type="button"
             className={styles.googleSigninBtn}
             onClick={handleGoogleSignin}
-            disabled={isGoogleLoading || isSubmitting}
+            disabled={isGoogleLoading || isSubmitting || isRedirecting}
             aria-label="Sign in with Google"
           >
             {isGoogleLoading ? (
@@ -141,6 +151,7 @@ export function ManualSigninForm({
               className={`${styles.input} ${errors.email ? styles.error : ''}`}
               value={formData.email}
               onChange={e => handleInputChange('email', e.target.value)}
+              disabled={isSubmitting || isRedirecting}
             />
             {errors.email && <div className={styles.errorMessage}>{errors.email}</div>}
           </div>
@@ -161,6 +172,7 @@ export function ManualSigninForm({
               className={`${styles.input} ${errors.password ? styles.error : ''}`}
               value={formData.password}
               onChange={e => handleInputChange('password', e.target.value)}
+              disabled={isSubmitting || isRedirecting}
             />
             {errors.password && <div className={styles.errorMessage}>{errors.password}</div>}
           </div>
@@ -178,6 +190,7 @@ export function ManualSigninForm({
                 type="checkbox"
                 checked={formData.rememberMe}
                 onChange={(e) => handleInputChange('rememberMe', e.target.checked)}
+                disabled={isSubmitting || isRedirecting}
                 style={{
                   marginRight: '0.5rem',
                   height: '16px',
@@ -214,13 +227,18 @@ export function ManualSigninForm({
           <button
             type="submit"
             className={styles.signupBtn}
-            disabled={isSubmitting || isGoogleLoading}
+            disabled={isSubmitting || isGoogleLoading || isRedirecting}
             aria-label="Sign in to account"
           >
             {isSubmitting ? (
               <>
                 <div className={styles.spinner} />
                 Signing In...
+              </>
+            ) : isRedirecting ? (
+              <>
+                <div className={styles.spinner} />
+                Redirecting to Dashboard...
               </>
             ) : (
               'Sign In'
@@ -230,6 +248,22 @@ export function ManualSigninForm({
           {errors.submit && (
             <div className={styles.errorMessage} style={{ textAlign: 'center', marginTop: '1rem' }}>
               {errors.submit}
+            </div>
+          )}
+
+          {isRedirecting && (
+            <div style={{
+              marginTop: '1rem',
+              padding: '1rem',
+              backgroundColor: '#d4edda',
+              border: '1px solid #c3e6cb',
+              borderRadius: '8px',
+              color: '#155724',
+              textAlign: 'center',
+              fontSize: '0.95rem',
+              fontWeight: '500'
+            }}>
+              Sign in successful! Redirecting you to your dashboard...
             </div>
           )}
         </form>

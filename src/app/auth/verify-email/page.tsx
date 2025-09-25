@@ -1,15 +1,31 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { resendConfirmation } from '@/lib/auth'
 import { Button } from '@/components/ui/Button'
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
+  const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
+  const [message, setMessage] = useState('')
   const [isResending, setIsResending] = useState(false)
   const [resendSuccess, setResendSuccess] = useState(false)
   const [resendError, setResendError] = useState('')
+
+  useEffect(() => {
+    const emailParam = searchParams.get('email')
+    const messageParam = searchParams.get('message')
+
+    if (emailParam) {
+      setEmail(emailParam)
+    }
+
+    if (messageParam) {
+      setMessage(messageParam)
+    }
+  }, [searchParams])
 
   const handleResendVerification = async () => {
     if (!email.trim()) {
@@ -39,6 +55,22 @@ export default function VerifyEmailPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="max-w-md w-full mx-auto p-6">
+        {message && (
+          <div style={{
+            marginBottom: '1rem',
+            padding: '1rem',
+            backgroundColor: '#e3f2fd',
+            border: '1px solid #1976d2',
+            borderRadius: '8px',
+            color: '#1976d2',
+            textAlign: 'center',
+            fontSize: '0.95rem',
+            fontWeight: '500'
+          }}>
+            {message}
+          </div>
+        )}
+
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,23 +145,62 @@ export default function VerifyEmailPage() {
           </div>
 
           <div className="pt-4 border-t border-border">
-            <div className="text-center space-y-2">
+            <div className="text-center space-y-3">
               <Link
-                href="/auth/login"
-                className="block text-primary hover:text-primary/80 font-medium"
+                href="/dashboard"
+                className="block bg-slate-600 hover:bg-slate-700 text-white font-medium py-2 px-4 rounded transition-colors"
               >
-                Back to Login
+                Continue to Dashboard
               </Link>
-              <Link
-                href="/auth/signup"
-                className="block text-foreground-muted hover:text-foreground text-sm"
-              >
-                Create a different account
-              </Link>
+              <div className="text-xs text-slate-500">
+                You can verify your email later, but some features will be limited
+              </div>
+              <div className="space-y-2 text-sm">
+                <Link
+                  href="/auth/login"
+                  className="block text-primary hover:text-primary/80 font-medium"
+                >
+                  Back to Login
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  className="block text-foreground-muted hover:text-foreground"
+                >
+                  Create a different account
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+  )
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <div className="max-w-md w-full mx-auto p-6">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                Verify Your Email
+              </h1>
+              <p className="text-foreground-muted">
+                Loading verification page...
+              </p>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <VerifyEmailContent />
+    </Suspense>
   )
 }

@@ -9,20 +9,44 @@ function LoginContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [initialEmail, setInitialEmail] = useState('')
+  const [message, setMessage] = useState('')
 
   useEffect(() => {
     const emailParam = searchParams.get('email')
+    const messageParam = searchParams.get('message')
+
     if (emailParam) {
       setInitialEmail(emailParam)
+    }
+
+    if (messageParam) {
+      setMessage(messageParam)
     }
   }, [searchParams])
 
   const handleSuccess = () => {
-    router.push('/dashboard')
+    // Check if there's a redirect URL from middleware
+    const redirectTo = searchParams.get('redirectTo') || '/dashboard'
+    router.push(redirectTo)
   }
 
   return (
     <div className={styles.signupBody}>
+      {message && (
+        <div style={{
+          marginBottom: '1rem',
+          padding: '1rem',
+          backgroundColor: '#e3f2fd',
+          border: '1px solid #1976d2',
+          borderRadius: '8px',
+          color: '#1976d2',
+          textAlign: 'center',
+          fontSize: '0.95rem',
+          fontWeight: '500'
+        }}>
+          {message}
+        </div>
+      )}
       <ManualSigninForm
         initialEmail={initialEmail}
         onSuccess={handleSuccess}
