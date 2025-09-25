@@ -17,7 +17,7 @@ export const TranslatorBox: React.FC = () => {
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging || !boxRef.current || !containerRef.current) return;
+      if (!isDragging || !boxRef.current || !containerRef.current) {return;}
 
       const containerRect = containerRef.current.getBoundingClientRect();
       const boxRect = boxRef.current.getBoundingClientRect();
@@ -53,7 +53,7 @@ export const TranslatorBox: React.FC = () => {
       return;
     }
 
-    if (!boxRef.current) return;
+    if (!boxRef.current) {return;}
 
     const boxRect = boxRef.current.getBoundingClientRect();
     setDragOffset({
@@ -65,7 +65,7 @@ export const TranslatorBox: React.FC = () => {
   };
 
   const handleTranslate = async () => {
-    if (!text.trim()) return;
+    if (!text.trim()) {return;}
 
     // This would integrate with Google Translate API
     // For now, just placeholder functionality

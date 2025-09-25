@@ -158,7 +158,7 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 
   // Handle WebRTC signaling from socket
   useEffect(() => {
-    if (!socket || !socketConnected) return;
+    if (!socket || !socketConnected) {return;}
 
     const handleWebRTCSignal = (data: { sessionId: string; signal: any; from: string }) => {
       if (data.sessionId !== currentSessionId.current || !peerManager.current) {
@@ -186,7 +186,7 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
 
   // Media control functions
   const toggleVideo = useCallback(() => {
-    if (!peerManager.current) return;
+    if (!peerManager.current) {return;}
 
     const newState = !isVideoEnabled;
     peerManager.current.toggleVideo(newState);
@@ -194,7 +194,7 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
   }, [isVideoEnabled]);
 
   const toggleAudio = useCallback(() => {
-    if (!peerManager.current) return;
+    if (!peerManager.current) {return;}
 
     const newState = !isAudioEnabled;
     peerManager.current.toggleAudio(newState);
@@ -202,7 +202,7 @@ export const WebRTCProvider: React.FC<WebRTCProviderProps> = ({ children }) => {
   }, [isAudioEnabled]);
 
   const changeQuality = useCallback(async (quality: 'high' | 'medium' | 'low') => {
-    if (!peerManager.current || currentQuality === quality) return;
+    if (!peerManager.current || currentQuality === quality) {return;}
 
     try {
       await peerManager.current.adaptQuality(quality);

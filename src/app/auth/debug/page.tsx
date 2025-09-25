@@ -8,7 +8,7 @@ export default function AuthDebugPage() {
   const [signupResult, setSignupResult] = useState<any>(null)
 
   const handleTestSignup = async () => {
-    if (!email) return
+    if (!email) {return}
 
     try {
       const result = await supabase.auth.signUp({

@@ -280,10 +280,10 @@ export class RedisService {
 
   private isCompatible(userPrefs: MatchingPreferences, candidatePrefs: MatchingPreferences): boolean {
     // Age compatibility
-    if (userPrefs.age_min && candidatePrefs.age < userPrefs.age_min) return false;
-    if (userPrefs.age_max && candidatePrefs.age > userPrefs.age_max) return false;
-    if (candidatePrefs.age_min && userPrefs.age < candidatePrefs.age_min) return false;
-    if (candidatePrefs.age_max && userPrefs.age > candidatePrefs.age_max) return false;
+    if (userPrefs.age_min && candidatePrefs.age < userPrefs.age_min) {return false;}
+    if (userPrefs.age_max && candidatePrefs.age > userPrefs.age_max) {return false;}
+    if (candidatePrefs.age_min && userPrefs.age < candidatePrefs.age_min) {return false;}
+    if (candidatePrefs.age_max && userPrefs.age > candidatePrefs.age_max) {return false;}
 
     // Gender compatibility
     if (userPrefs.gender_preference &&

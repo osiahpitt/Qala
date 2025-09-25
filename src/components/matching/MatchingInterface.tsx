@@ -143,7 +143,7 @@ export const MatchingInterface: React.FC = () => {
   }, [currentMatch, queuePosition]);
 
   const handleStartMatching = async (preferences: MatchingPreferences) => {
-    if (!userProfile) return;
+    if (!userProfile) {return;}
 
     setLoading(true);
     try {
@@ -181,7 +181,7 @@ export const MatchingInterface: React.FC = () => {
   };
 
   const handleAcceptMatch = async () => {
-    if (!currentMatch) return;
+    if (!currentMatch) {return;}
 
     setLoading(true);
     try {
@@ -203,7 +203,7 @@ export const MatchingInterface: React.FC = () => {
   };
 
   const handleRejectMatch = async () => {
-    if (!currentMatch) return;
+    if (!currentMatch) {return;}
 
     setLoading(true);
     try {

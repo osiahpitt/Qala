@@ -51,7 +51,7 @@ export class PeerConnectionManager {
   }
 
   private setupEventHandlers(): void {
-    if (!this.peer) return;
+    if (!this.peer) {return;}
 
     this.peer.on('signal', (data) => {
       logger.debug('WebRTC signal generated:', data);

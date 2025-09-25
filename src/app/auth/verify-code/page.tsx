@@ -32,9 +32,9 @@ function VerifyCodeContent() {
 
       if (result.success) {
         setSuccess(true)
-        // Redirect to profile setup after successful verification
+        // Redirect to dashboard after successful verification
         setTimeout(() => {
-          router.push('/profile/setup')
+          router.push('/dashboard')
         }, 2000)
       } else {
         setError(result.error || 'Verification failed')
@@ -84,7 +84,7 @@ function VerifyCodeContent() {
             Email Verified!
           </h1>
           <p className="text-foreground-muted">
-            Your email has been successfully verified. Redirecting to profile setup...
+            Your email has been successfully verified. Redirecting to dashboard...
           </p>
         </div>
       </div>

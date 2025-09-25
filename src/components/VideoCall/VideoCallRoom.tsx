@@ -97,7 +97,7 @@ export const VideoCallRoom: React.FC<VideoCallRoomProps> = ({ sessionId }) => {
           <div className="video-panels" data-layout="side-by-side">
             <VideoPanel
               stream={localStream}
-              isLocal={true}
+              isLocal
               isVideoEnabled={isVideoEnabled}
               isAudioEnabled={isAudioEnabled}
               onToggleVideo={toggleVideo}

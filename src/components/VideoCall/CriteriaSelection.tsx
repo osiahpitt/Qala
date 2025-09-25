@@ -8,7 +8,7 @@ interface CriteriaSelectionProps {
 }
 
 export const CriteriaSelection: React.FC<CriteriaSelectionProps> = ({ userProfile }) => {
-  if (!userProfile) return null;
+  if (!userProfile) {return null;}
 
   return (
     <section className="criteria-selection">
@@ -68,9 +68,9 @@ export const CriteriaSelection: React.FC<CriteriaSelectionProps> = ({ userProfil
 };
 
 function getAgeRange(age: number): string {
-  if (age < 25) return '18-24';
-  if (age < 35) return '25-34';
-  if (age < 45) return '35-44';
-  if (age < 55) return '45-54';
+  if (age < 25) {return '18-24';}
+  if (age < 35) {return '25-34';}
+  if (age < 45) {return '35-44';}
+  if (age < 55) {return '45-54';}
   return '55+';
 }

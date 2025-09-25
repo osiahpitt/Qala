@@ -58,7 +58,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ isOpen, onClose, sessionId
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!currentMessage.trim() || !userProfile) return;
+    if (!currentMessage.trim() || !userProfile) {return;}
 
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
@@ -89,7 +89,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ isOpen, onClose, sessionId
     return timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {return null;}
 
   return (
     <aside className="text-chat-panel">

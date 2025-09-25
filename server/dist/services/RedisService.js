@@ -1,5 +1,5 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
+const __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -204,13 +204,13 @@ class RedisService {
     }
     isCompatible(userPrefs, candidatePrefs) {
         if (userPrefs.age_min && candidatePrefs.age < userPrefs.age_min)
-            return false;
+            {return false;}
         if (userPrefs.age_max && candidatePrefs.age > userPrefs.age_max)
-            return false;
+            {return false;}
         if (candidatePrefs.age_min && userPrefs.age < candidatePrefs.age_min)
-            return false;
+            {return false;}
         if (candidatePrefs.age_max && userPrefs.age > candidatePrefs.age_max)
-            return false;
+            {return false;}
         if (userPrefs.gender_preference &&
             userPrefs.gender_preference !== 'any' &&
             candidatePrefs.gender !== userPrefs.gender_preference) {

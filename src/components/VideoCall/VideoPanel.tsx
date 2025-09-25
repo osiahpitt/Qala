@@ -76,7 +76,7 @@ export const VideoPanel: React.FC<VideoPanelProps> = ({
           <div className="connection-indicator">
             {isConnecting && (
               <div className="connecting-spinner">
-                <div className="spinner"></div>
+                <div className="spinner" />
               </div>
             )}
             {isConnected && (
