@@ -2,14 +2,17 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useAuth } from '@/contexts/AuthContext'
 import { ManualSigninForm } from '@/components/ManualSigninForm'
 import styles from '../signup/signup.module.css'
 
 function LoginContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { user, isAuthenticated, loading } = useAuth()
   const [initialEmail, setInitialEmail] = useState('')
   const [message, setMessage] = useState('')
+  const [shouldRedirect, setShouldRedirect] = useState(false)
 
   useEffect(() => {
     const emailParam = searchParams.get('email')
@@ -24,30 +27,23 @@ function LoginContent() {
     }
   }, [searchParams])
 
-  const handleSuccess = () => {
-    // Check if there's a redirect URL from middleware
-    const redirectTo = searchParams.get('redirectTo') || '/dashboard'
-    console.log('=== REDIRECT DEBUG ===')
-    console.log('Attempting to redirect to:', redirectTo)
-    console.log('Router object:', router)
-    console.log('Current location:', window.location.href)
+  // Handle redirect after authentication state updates
+  useEffect(() => {
+    if (shouldRedirect && isAuthenticated && user && !loading) {
+      const redirectTo = searchParams.get('redirectTo') || '/dashboard'
+      console.log('=== REDIRECT DEBUG ===')
+      console.log('Auth state confirmed, redirecting to:', redirectTo)
+      console.log('User:', !!user, 'Authenticated:', isAuthenticated, 'Loading:', loading)
 
-    try {
-      // Try router.push first
-      router.push(redirectTo)
-      console.log('router.push called successfully')
-
-      // Also try window.location as fallback after a delay
-      setTimeout(() => {
-        console.log('Fallback: Using window.location.href')
-        window.location.href = redirectTo
-      }, 1000)
-
-    } catch (error) {
-      console.error('router.push failed:', error)
-      // Use window.location as backup
+      // Use window.location for reliable redirect
       window.location.href = redirectTo
     }
+  }, [shouldRedirect, isAuthenticated, user, loading, searchParams])
+
+  const handleSuccess = () => {
+    console.log('=== SIGNIN SUCCESS ===')
+    console.log('Authentication successful, waiting for auth state update...')
+    setShouldRedirect(true)
   }
 
   return (

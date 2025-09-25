@@ -13,9 +13,8 @@ export default function DashboardPage() {
   console.log('Dashboard page rendering')
   console.log('Auth state:', { user: !!user, userProfile: !!userProfile, loading, isEmailVerified })
 
-  // Removed redirect useEffect - let middleware handle authentication redirects
-  // This prevents infinite redirect loops during auth state synchronization
-
+  // Let middleware handle authentication redirects
+  // Only show loading state while auth is initializing
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-900">
@@ -24,12 +23,15 @@ export default function DashboardPage() {
     );
   }
 
+  // If not authenticated after loading is complete, let middleware redirect
+  // Don't return null immediately as this causes flash/blink issues
   if (!user) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-900">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-qala-gold" />
+      </div>
+    );
   }
-
-  // Check if user has completed their profile
-  const hasCompletedProfile = userProfile && userProfile.fullName && userProfile.nativeLanguage;
 
   return (
     <SocketProvider>
