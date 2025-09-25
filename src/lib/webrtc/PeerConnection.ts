@@ -1,5 +1,5 @@
 import SimplePeer from 'simple-peer';
-import type { SimplePeerData, SignalData } from 'simple-peer';
+import type { SimplePeerSignal } from 'simple-peer';
 import { getWebRTCConfig, getMediaConstraints } from './config';
 import { logger } from '@/lib/utils/logger';
 
@@ -12,7 +12,7 @@ export interface ConnectionQuality {
 }
 
 export interface PeerConnectionEvents {
-  signal: (data: SignalData) => void;
+  signal: (data: SimplePeerSignal) => void;
   stream: (stream: MediaStream) => void;
   connect: () => void;
   error: (error: Error) => void;
@@ -105,7 +105,7 @@ export class PeerConnectionManager {
     }
   }
 
-  signal(data: SignalData): void {
+  signal(data: SimplePeerSignal): void {
     if (!this.peer) {
       logger.error('Cannot signal: peer connection not initialized');
       return;
