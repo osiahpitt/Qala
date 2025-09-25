@@ -1,9 +1,9 @@
-import { createClient } from '@supabase/supabase-js'
+import { createBrowserClient, createServerClient } from '@supabase/ssr'
 import { Database } from '@/types/supabase'
 
 // Ensure required environment variables are present
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error(
@@ -11,31 +11,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
   )
 }
 
-// Create Supabase client
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-    flowType: 'pkce',
-    // Add production-specific settings
-    debug: process.env.NODE_ENV === 'development',
-    storageKey: 'qala-auth',
-  },
-  global: {
-    headers: {
-      'X-Client-Info': 'supabase-js-web',
-    },
-  },
-  realtime: {
-    params: {
-      eventsPerSecond: 10,
-    },
-  },
-  db: {
-    schema: 'public',
-  },
-})
+// Create browser client with cookie support for SSR
+export const supabase = createBrowserClient<Database>(supabaseUrl, supabaseAnonKey)
 
 // Server-side Supabase client (for API routes and server actions)
 export const createServerSupabaseClient = () => {
@@ -45,13 +22,14 @@ export const createServerSupabaseClient = () => {
     throw new Error('Missing SUPABASE_SERVICE_ROLE_KEY environment variable')
   }
 
-  return createClient<Database>(supabaseUrl, supabaseServiceKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-    db: {
-      schema: 'public',
+  return createServerClient<Database>(supabaseUrl, supabaseServiceKey, {
+    cookies: {
+      getAll() {
+        return []
+      },
+      setAll() {
+        // No-op for service role client
+      },
     },
   })
 }
