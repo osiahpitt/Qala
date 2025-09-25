@@ -139,13 +139,27 @@ export async function signIn(credentials: Login): Promise<AuthResponse> {
 
     console.log('Starting Supabase auth call...')
 
-    // Remove artificial timeout - let Supabase handle its own timeouts
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: credentials.email,
-      password: credentials.password,
-    })
+    // Add explicit promise handling with timeout
+    let data, error;
+    try {
+      const authPromise = supabase.auth.signInWithPassword({
+        email: credentials.email,
+        password: credentials.password,
+      });
 
-    console.log('Supabase auth call completed!')
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Auth request timeout after 30 seconds')), 30000);
+      });
+
+      const result = await Promise.race([authPromise, timeoutPromise]);
+      data = result.data;
+      error = result.error;
+
+      console.log('Supabase auth call completed!')
+    } catch (timeoutError) {
+      console.log('Auth promise handling error:', timeoutError)
+      throw timeoutError;
+    }
 
     console.log('Supabase signIn result:', {
       error: error?.message,
