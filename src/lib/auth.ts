@@ -139,26 +139,40 @@ export async function signIn(credentials: Login): Promise<AuthResponse> {
 
     console.log('Starting Supabase auth call...')
 
-    // Add explicit promise handling with timeout
+    // Use direct fetch instead of SDK to bypass hanging issue
     let data, error;
     try {
-      const authPromise = supabase.auth.signInWithPassword({
-        email: credentials.email,
-        password: credentials.password,
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: {
+          'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: credentials.email,
+          password: credentials.password
+        })
       });
 
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Auth request timeout after 30 seconds')), 30000);
-      });
+      console.log('Direct fetch auth call completed!')
 
-      const result = await Promise.race([authPromise, timeoutPromise]);
-      data = result.data;
-      error = result.error;
-
-      console.log('Supabase auth call completed!')
-    } catch (timeoutError) {
-      console.log('Auth promise handling error:', timeoutError)
-      throw timeoutError;
+      if (response.ok) {
+        const authData = await response.json();
+        data = {
+          user: authData.user,
+          session: authData
+        };
+        error = null;
+      } else {
+        const errorData = await response.json();
+        data = null;
+        error = { message: errorData.msg || errorData.error_description || 'Authentication failed' };
+      }
+    } catch (fetchError) {
+      console.log('Direct fetch error:', fetchError)
+      data = null;
+      error = { message: fetchError instanceof Error ? fetchError.message : 'Network error' };
     }
 
     console.log('Supabase signIn result:', {
