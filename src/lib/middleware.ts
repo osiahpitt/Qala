@@ -138,11 +138,17 @@ export async function authMiddleware(request: NextRequest) {
       }
     )
 
-    // Get current session
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.getSession()
+    // Get current session - try refresh if initial call fails
+    let { data: { session }, error } = await supabase.auth.getSession()
+
+    // If no session found, try refreshing the session
+    if (!session && !error) {
+      const refreshResult = await supabase.auth.refreshSession()
+      if (!refreshResult.error && refreshResult.data.session) {
+        session = refreshResult.data.session
+        error = null
+      }
+    }
 
     const isAuthenticated = !!session?.user && !error
     const user = session?.user || null
