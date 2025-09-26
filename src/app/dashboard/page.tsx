@@ -2,26 +2,14 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { SocketProvider } from '@/contexts/SocketContext';
-import { VideoCallInterface } from '@/components/VideoCallInterface';
+import { MatchingInterface } from '@/components/matching/MatchingInterface';
 import { redirect } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function DashboardPage() {
   const { user, userProfile, loading, isEmailVerified } = useAuth();
 
-  // TEMPORARY: Skip auth checks to test if MatchingInterface works
-  // TODO: Remove this bypass after testing
-  const BYPASS_AUTH_FOR_TESTING = true;
-
-  if (BYPASS_AUTH_FOR_TESTING) {
-    return (
-      <SocketProvider>
-        <VideoCallInterface />
-      </SocketProvider>
-    );
-  }
-
-  // Dashboard rendering with auth state
+  // Dashboard rendering with proper auth state
 
   // Let middleware handle authentication redirects
   // Only show loading state while auth is initializing
@@ -45,7 +33,7 @@ export default function DashboardPage() {
 
   return (
     <SocketProvider>
-      <VideoCallInterface />
+      <MatchingInterface />
     </SocketProvider>
   );
 }

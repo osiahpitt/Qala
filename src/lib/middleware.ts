@@ -12,7 +12,7 @@ import type { User } from '@supabase/supabase-js'
  * Route protection configuration
  */
 export const PROTECTED_ROUTES = [
-  // '/dashboard', // TEMPORARILY DISABLED FOR TESTING
+  '/dashboard',
   '/profile',
   '/matching',
   '/session',
