@@ -9,9 +9,7 @@ import { useEffect } from 'react';
 export default function DashboardPage() {
   const { user, userProfile, loading, isEmailVerified } = useAuth();
 
-  console.log('=== DASHBOARD DEBUG ===')
-  console.log('Dashboard page rendering')
-  console.log('Auth state:', { user: !!user, userProfile: !!userProfile, loading, isEmailVerified })
+  // Dashboard rendering with auth state
 
   // Let middleware handle authentication redirects
   // Only show loading state while auth is initializing

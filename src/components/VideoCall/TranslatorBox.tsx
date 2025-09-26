@@ -69,7 +69,7 @@ export const TranslatorBox: React.FC = () => {
 
     // This would integrate with Google Translate API
     // For now, just placeholder functionality
-    console.log('Translating:', text);
+    // Translating text
 
     // TODO: Implement Google Translate API integration
     // const translation = await translateText(text, targetLanguage);

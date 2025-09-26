@@ -60,6 +60,14 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [isRetrying, setIsRetrying] = useState(false);
 
   const connect = useCallback(() => {
+    const serverUrl = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL;
+
+    // If no server URL is configured, don't attempt connection
+    if (!serverUrl) {
+      setConnectionError('Video chat server is not configured. Basic features available.');
+      return;
+    }
+
     if (!session?.access_token || socket?.connected || isRetrying) {
       return;
     }
@@ -71,7 +79,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     }
 
     setIsRetrying(true);
-    const serverUrl = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL || 'http://localhost:3001';
 
     const newSocket = io(serverUrl, {
       auth: {
@@ -106,9 +113,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       setRetryCount(prev => prev + 1);
       setIsRetrying(false);
 
-      // Don't spam the console with connection errors
+      // Log warning only once
       if (retryCount === 0) {
-        console.warn('WebRTC signaling server is not available. Video calling features will be disabled.');
+        logger.warn('WebRTC signaling server is not available. Video calling features will be disabled.');
       }
     });
 
@@ -228,11 +235,19 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   }, [socket, isConnected]);
 
   // Auto-connect when user is authenticated (only if server URL is configured)
+  // Connection happens asynchronously and doesn't block UI
   useEffect(() => {
     const serverUrl = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL;
 
     if (user && session?.access_token && serverUrl) {
-      connect();
+      // Use setTimeout to ensure connection doesn't block UI rendering
+      const timeoutId = setTimeout(() => {
+        connect();
+      }, 100);
+      return () => {
+        clearTimeout(timeoutId);
+        disconnect();
+      };
     } else {
       disconnect();
     }

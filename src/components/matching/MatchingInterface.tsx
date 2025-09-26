@@ -158,7 +158,7 @@ export const MatchingInterface: React.FC = () => {
     });
 
     peerConnectionRef.current.on('error', (error) => {
-      console.error('WebRTC error:', error);
+      // WebRTC connection error occurred
       setConnectionStatus('failed');
     });
 
@@ -180,7 +180,7 @@ export const MatchingInterface: React.FC = () => {
 
       return mediaStream;
     } catch (error) {
-      console.error('Failed to initialize media:', error);
+      // Failed to initialize media
       setConnectionStatus('failed');
       return null;
     }
@@ -201,7 +201,7 @@ export const MatchingInterface: React.FC = () => {
     if (mediaStream) {
       initializePeerConnection(true);
       // TODO: Implement matching logic with backend
-      console.log('Starting matching with criteria:', matchingCriteria);
+      // Starting matching with criteria
     } else {
       setIsMatching(false);
     }

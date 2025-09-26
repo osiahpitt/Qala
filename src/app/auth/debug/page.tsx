@@ -23,9 +23,9 @@ export default function AuthDebugPage() {
       })
 
       setSignupResult(result)
-      console.log('Signup result:', result)
+      // Signup result processed
     } catch (error) {
-      console.error('Signup error:', error)
+      // Signup error occurred
       setSignupResult({ error })
     }
   }

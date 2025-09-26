@@ -130,14 +130,7 @@ export async function verifyEmail(email: string, token: string): Promise<AuthRes
  */
 export async function signIn(credentials: Login): Promise<AuthResponse> {
   try {
-    console.log('=== AUTH SIGNIN DEBUG ===')
-    console.log('Attempting signIn with:', { email: credentials.email, password: '[REDACTED]' })
-    console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
-    console.log('Supabase client initialized:', !!supabase)
-
     // Remove mock auth to prevent interference with real authentication
-
-    console.log('Starting Supabase auth call...')
 
     // Use direct fetch instead of SDK to bypass hanging issue
     let data, error;
@@ -155,7 +148,7 @@ export async function signIn(credentials: Login): Promise<AuthResponse> {
         })
       });
 
-      console.log('Direct fetch auth call completed!')
+      // Direct fetch auth call completed
 
       if (response.ok) {
         const authData = await response.json();
@@ -170,22 +163,13 @@ export async function signIn(credentials: Login): Promise<AuthResponse> {
         error = { message: errorData.msg || errorData.error_description || 'Authentication failed' };
       }
     } catch (fetchError) {
-      console.log('Direct fetch error:', fetchError)
       data = null;
       error = { message: fetchError instanceof Error ? fetchError.message : 'Network error' };
     }
 
-    console.log('Supabase signIn result:', {
-      error: error?.message,
-      user: !!data?.user,
-      session: !!data?.session,
-      userEmail: data?.user?.email,
-      sessionToken: data?.session?.access_token?.substring(0, 20) + '...'
-    })
+    // Supabase signIn completed
 
     if (error) {
-      console.log('SignIn failed:', error.message)
-      console.log('Full Supabase error object:', error)
 
       // Provide more user-friendly error messages
       let userFriendlyError = error.message
@@ -204,14 +188,13 @@ export async function signIn(credentials: Login): Promise<AuthResponse> {
       }
     }
 
-    console.log('SignIn successful!')
+    // SignIn successful
     return {
       success: true,
       user: data.user,
       session: data.session,
     }
   } catch (error) {
-    console.error('SignIn exception:', error)
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Sign in failed',

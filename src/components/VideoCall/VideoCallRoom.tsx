@@ -43,7 +43,7 @@ export const VideoCallRoom: React.FC<VideoCallRoomProps> = ({ sessionId }) => {
       setIsInitiator(initiator);
 
       initializeCall(sessionId, initiator).catch((error) => {
-        console.error('Failed to initialize call:', error);
+        // Failed to initialize call
       });
 
       setCallStarted(true);

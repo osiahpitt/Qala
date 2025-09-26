@@ -31,9 +31,6 @@ function LoginContent() {
   useEffect(() => {
     if (shouldRedirect && isAuthenticated && user && !loading) {
       const redirectTo = searchParams.get('redirectTo') || '/dashboard'
-      console.log('=== REDIRECT DEBUG ===')
-      console.log('Auth state confirmed, redirecting to:', redirectTo)
-      console.log('User:', !!user, 'Authenticated:', isAuthenticated, 'Loading:', loading)
 
       // Use window.location for reliable redirect
       window.location.href = redirectTo
@@ -41,8 +38,6 @@ function LoginContent() {
   }, [shouldRedirect, isAuthenticated, user, loading, searchParams])
 
   const handleSuccess = () => {
-    console.log('=== SIGNIN SUCCESS ===')
-    console.log('Authentication successful, waiting for auth state update...')
     setShouldRedirect(true)
   }
 

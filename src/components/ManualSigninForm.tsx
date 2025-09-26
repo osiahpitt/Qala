@@ -55,19 +55,14 @@ export function ManualSigninForm({
       const result = await signIn(validatedData)
 
       if (result.success) {
-        console.log('=== SIGNIN DEBUG ===')
-        console.log('Sign in successful, result:', result)
-
         // Show redirecting state and call success immediately
         setIsSubmitting(false)
         setIsRedirecting(true)
 
-        console.log('Calling onSuccess callback')
         onSuccess?.()
 
         // Reset redirecting state after a brief delay
         setTimeout(() => {
-          console.log('Resetting isRedirecting state')
           setIsRedirecting(false)
         }, 3000)
       } else {
