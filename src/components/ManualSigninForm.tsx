@@ -59,11 +59,6 @@ export function ManualSigninForm({
         setIsSubmitting(false)
         setIsRedirecting(true)
 
-        // NUCLEAR SOLUTION: Redirect immediately, don't wait for auth state
-        setTimeout(() => {
-          window.location.href = '/dashboard'
-        }, 1000)
-
         onSuccess?.()
 
         // Reset redirecting state after a brief delay
