@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { SocketProvider } from '@/contexts/SocketContext';
-import { MatchingInterface } from '@/components/matching/MatchingInterface';
+import { VideoCallInterface } from '@/components/VideoCallInterface';
 import { redirect } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -16,7 +16,7 @@ export default function DashboardPage() {
   if (BYPASS_AUTH_FOR_TESTING) {
     return (
       <SocketProvider>
-        <MatchingInterface />
+        <VideoCallInterface />
       </SocketProvider>
     );
   }
@@ -45,7 +45,7 @@ export default function DashboardPage() {
 
   return (
     <SocketProvider>
-      <MatchingInterface />
+      <VideoCallInterface />
     </SocketProvider>
   );
 }
