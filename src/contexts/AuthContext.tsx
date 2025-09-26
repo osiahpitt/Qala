@@ -204,7 +204,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             await fetchUserProfile(currentUser.id)
           } catch (profileError) {
             // Don't fail initialization if profile fetch fails
-            console.warn('Failed to fetch user profile during initialization:', profileError)
+            // Failed to fetch user profile during initialization
           }
         }
       } catch (error) {
@@ -247,7 +247,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
               await fetchUserProfile(session.user.id)
             } catch (error) {
               // Silently handle profile fetch errors to avoid breaking auth flow
-              console.warn('Failed to fetch user profile:', error)
+              // Failed to fetch user profile
             }
           }
           setError(null)
@@ -263,7 +263,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             try {
               await fetchUserProfile(session.user.id)
             } catch (error) {
-              console.warn('Failed to fetch user profile on token refresh:', error)
+              // Failed to fetch user profile on token refresh
             }
           }
           break
@@ -273,7 +273,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             try {
               await fetchUserProfile(session.user.id)
             } catch (error) {
-              console.warn('Failed to fetch user profile on user update:', error)
+              // Failed to fetch user profile on user update
             }
           }
           break

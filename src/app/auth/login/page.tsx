@@ -37,6 +37,21 @@ function LoginContent() {
     }
   }, [shouldRedirect, isAuthenticated, user, loading, searchParams])
 
+  // Fallback redirect mechanism with timeout
+  useEffect(() => {
+    if (shouldRedirect) {
+      // If auth state doesn't update within 3 seconds, force redirect
+      const fallbackTimeout = setTimeout(() => {
+        if (!isAuthenticated || !user) {
+          const redirectTo = searchParams.get('redirectTo') || '/dashboard'
+          window.location.href = redirectTo
+        }
+      }, 3000)
+
+      return () => clearTimeout(fallbackTimeout)
+    }
+  }, [shouldRedirect, isAuthenticated, user, searchParams])
+
   const handleSuccess = () => {
     setShouldRedirect(true)
   }

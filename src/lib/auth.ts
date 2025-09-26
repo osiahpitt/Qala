@@ -157,6 +157,14 @@ export async function signIn(credentials: Login): Promise<AuthResponse> {
           session: authData
         };
         error = null;
+
+        // Set the session in Supabase client to trigger auth state changes
+        if (authData.access_token && authData.refresh_token) {
+          await supabase.auth.setSession({
+            access_token: authData.access_token,
+            refresh_token: authData.refresh_token
+          });
+        }
       } else {
         const errorData = await response.json();
         data = null;
