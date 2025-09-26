@@ -9,6 +9,18 @@ import { useEffect } from 'react';
 export default function DashboardPage() {
   const { user, userProfile, loading, isEmailVerified } = useAuth();
 
+  // TEMPORARY: Skip auth checks to test if MatchingInterface works
+  // TODO: Remove this bypass after testing
+  const BYPASS_AUTH_FOR_TESTING = true;
+
+  if (BYPASS_AUTH_FOR_TESTING) {
+    return (
+      <SocketProvider>
+        <MatchingInterface />
+      </SocketProvider>
+    );
+  }
+
   // Dashboard rendering with auth state
 
   // Let middleware handle authentication redirects
