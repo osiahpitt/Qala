@@ -10,15 +10,7 @@ export const VideoCallInterface: React.FC = () => {
   const floatingBoxRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const languages = [
-    { code: 'en', name: 'English' },
-    { code: 'es', name: 'Spanish' },
-    { code: 'zh', name: 'Chinese' },
-    { code: 'ru', name: 'Russian' },
-    { code: 'fr', name: 'French' }
-  ];
-
-  // Make floating box draggable
+  // Make floating box draggable - EXACT replica from original code
   useEffect(() => {
     const floatingBox = floatingBoxRef.current;
     const container = containerRef.current;
@@ -28,11 +20,12 @@ export const VideoCallInterface: React.FC = () => {
     let dragOffsetX = 0;
     let dragOffsetY = 0;
 
-    const isDraggableTarget = (target: Element) => {
-      return target.classList.contains('translator-header') ||
-             target === floatingBox ||
-             (target.parentElement === floatingBox && !target.classList.contains('translator-textarea'));
-    };
+    function isDraggableTarget(target: Element) {
+      if ((target as HTMLElement).classList.contains('translator-header')) return true;
+      if (target === floatingBox) return true;
+      if (target.parentElement === floatingBox && !(target as HTMLElement).classList.contains('translator-textarea')) return true;
+      return false;
+    }
 
     const handleMouseDown = (e: MouseEvent) => {
       if (!isDraggableTarget(e.target as Element)) return;
@@ -75,22 +68,87 @@ export const VideoCallInterface: React.FC = () => {
     };
   }, []);
 
-  // Close dropdown on outside click
+  // Language dropdown logic - EXACT replica from original
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const dropdown = document.querySelector('.language-dropdown');
-      if (dropdown && !dropdown.contains(e.target as Node)) {
-        setIsLanguageDropdownOpen(false);
+    const dropdown = document.querySelector('.language-dropdown');
+    const btn = dropdown?.querySelector('.dropdown-btn') as HTMLButtonElement;
+    const menu = dropdown?.querySelector('.dropdown-menu') as HTMLUListElement;
+    const options = Array.from(menu?.querySelectorAll('li') || []);
+
+    if (!btn || !menu) return;
+
+    const handleBtnClick = () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      if (expanded) {
+        menu.hidden = true;
+      } else {
+        menu.hidden = false;
+        (options[0] as HTMLElement)?.focus();
       }
     };
 
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    const handleOptionClick = (option: Element) => {
+      options.forEach(o => o.setAttribute('aria-selected', 'false'));
+      option.setAttribute('aria-selected', 'true');
+      btn.textContent = `Language: ${option.textContent} ▾`;
+      btn.setAttribute('aria-expanded', 'false');
+      menu.hidden = true;
+      btn.focus();
+    };
+
+    const handleOptionKeyDown = (e: KeyboardEvent, option: Element) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleOptionClick(option);
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        const next = option.nextElementSibling || options[0];
+        (next as HTMLElement)?.focus();
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const prev = option.previousElementSibling || options[options.length - 1];
+        (prev as HTMLElement)?.focus();
+      }
+      if (e.key === 'Escape') {
+        btn.setAttribute('aria-expanded', 'false');
+        menu.hidden = true;
+        btn.focus();
+      }
+    };
+
+    const handleDocumentClick = (e: MouseEvent) => {
+      if (!dropdown?.contains(e.target as Node)) {
+        btn.setAttribute('aria-expanded', 'false');
+        menu.hidden = true;
+      }
+    };
+
+    btn.addEventListener('click', handleBtnClick);
+    options.forEach(option => {
+      option.addEventListener('click', () => handleOptionClick(option));
+      option.addEventListener('keydown', (e) => handleOptionKeyDown(e, option));
+    });
+    document.addEventListener('click', handleDocumentClick);
+
+    return () => {
+      btn.removeEventListener('click', handleBtnClick);
+      options.forEach(option => {
+        option.removeEventListener('click', () => handleOptionClick(option));
+        option.removeEventListener('keydown', (e) => handleOptionKeyDown(e, option));
+      });
+      document.removeEventListener('click', handleDocumentClick);
+    };
   }, []);
 
-  const handleLanguageSelect = (language: string) => {
-    setSelectedLanguage(language);
-    setIsLanguageDropdownOpen(false);
+  const handleChatToggle = () => {
+    setIsChatOpen(!isChatOpen);
+  };
+
+  const handleChatClose = () => {
+    setIsChatOpen(false);
   };
 
   const handleChatSubmit = (e: React.FormEvent) => {
@@ -116,7 +174,7 @@ export const VideoCallInterface: React.FC = () => {
           height: 100vh;
           width: 100vw;
           overflow: hidden;
-          background: #000 center center/cover no-repeat fixed;
+          background: url('/Bf3EhsQdUry_xFMpMxrbp.jpg') center center/cover no-repeat fixed;
           color: #eee;
           font-family: "Roboto", sans-serif;
           display: flex;
@@ -527,44 +585,26 @@ export const VideoCallInterface: React.FC = () => {
       `}</style>
 
       <div className="video-call-body">
-        {/* Top-right controls */}
+        {/* Top-right controls - EXACT structure from original */}
         <div className="top-right-controls">
           <div className="dropdown language-dropdown" tabIndex={0}>
             <button
               className="dropdown-btn"
               aria-haspopup="listbox"
-              aria-expanded={isLanguageDropdownOpen}
-              onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
+              aria-expanded="false"
+              id="languageBtn"
             >
-              Language: {selectedLanguage} ▾
+              Language: English ▾
             </button>
-            <ul
-              className="dropdown-menu"
-              role="listbox"
-              hidden={!isLanguageDropdownOpen}
-            >
-              {languages.map((lang) => (
-                <li
-                  key={lang.code}
-                  role="option"
-                  tabIndex={0}
-                  aria-selected={selectedLanguage === lang.name}
-                  onClick={() => handleLanguageSelect(lang.name)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      handleLanguageSelect(lang.name);
-                    }
-                  }}
-                >
-                  {lang.name}
-                </li>
-              ))}
+            <ul className="dropdown-menu" role="listbox" aria-labelledby="languageBtn" hidden>
+              <li role="option" tabIndex={0} data-lang="en" aria-selected="true">English</li>
+              <li role="option" tabIndex={0} data-lang="es">Spanish</li>
+              <li role="option" tabIndex={0} data-lang="zh">Chinese</li>
+              <li role="option" tabIndex={0} data-lang="ru">Russian</li>
+              <li role="option" tabIndex={0} data-lang="fr">French</li>
             </ul>
           </div>
-          <button className="profile-btn" type="button">
-            Profile
-          </button>
+          <button className="profile-btn" type="button">Profile</button>
         </div>
 
         {/* Main app container */}
@@ -574,14 +614,14 @@ export const VideoCallInterface: React.FC = () => {
             <h1>QALA Language Exchange</h1>
           </header>
 
-          {/* Criteria selection */}
+          {/* Criteria selection - EXACT structure from original */}
           <section className="criteria-selection">
             <div className="criteria-tab">Preferred Language Partner</div>
             <form>
               <div className="form-row">
                 <label htmlFor="native-language">Native Language</label>
                 <select id="native-language" name="native-language" required>
-                  <option value="" disabled>Select</option>
+                  <option value="" disabled selected>Select</option>
                   <option>English</option>
                   <option>Spanish</option>
                   <option>Chinese</option>
@@ -592,7 +632,7 @@ export const VideoCallInterface: React.FC = () => {
               <div className="form-row">
                 <label htmlFor="target-language">Target Language</label>
                 <select id="target-language" name="target-language" required>
-                  <option value="" disabled>Select</option>
+                  <option value="" disabled selected>Select</option>
                   <option>English</option>
                   <option>Spanish</option>
                   <option>Chinese</option>
@@ -603,7 +643,7 @@ export const VideoCallInterface: React.FC = () => {
               <div className="form-row">
                 <label htmlFor="age">Age</label>
                 <select id="age" name="age">
-                  <option value="" disabled>Select</option>
+                  <option value="" disabled selected>Select</option>
                   <option>18-24</option>
                   <option>25-34</option>
                   <option>35-44</option>
@@ -614,7 +654,7 @@ export const VideoCallInterface: React.FC = () => {
               <div className="form-row">
                 <label htmlFor="gender">Gender</label>
                 <select id="gender" name="gender">
-                  <option value="" disabled>Select</option>
+                  <option value="" disabled selected>Select</option>
                   <option>Any</option>
                   <option>Male</option>
                   <option>Female</option>
@@ -624,7 +664,7 @@ export const VideoCallInterface: React.FC = () => {
               <div className="form-row">
                 <label htmlFor="proficiency">Proficiency Level</label>
                 <select id="proficiency" name="proficiency">
-                  <option value="" disabled>Select</option>
+                  <option value="" disabled selected>Select</option>
                   <option>Beginner</option>
                   <option>Intermediate</option>
                   <option>Advanced</option>
@@ -637,58 +677,33 @@ export const VideoCallInterface: React.FC = () => {
           {/* Video chat container */}
           <main className="video-chat-container">
             <div className="video-panels" data-layout="side-by-side">
-              {/* User video panel */}
-              <div className="video-panel user-video" ref={containerRef}>
-                <video autoPlay muted playsInline />
-                <div
-                  className="left-floating-box"
-                  ref={floatingBoxRef}
-                  tabIndex={0}
-                >
+              {/* User video panel - EXACT structure from original */}
+              <div className="video-panel user-video" style={{position: 'relative'}} ref={containerRef}>
+                <video autoPlay muted playsInline></video>
+                <div className="left-floating-box" id="floating-box" tabIndex={0} ref={floatingBoxRef}>
                   <div className="translator-header">Translator</div>
-                  <textarea
-                    className="translator-textarea"
-                    placeholder="Type here..."
-                  />
+                  <textarea className="translator-textarea" placeholder="Type here..."></textarea>
                 </div>
               </div>
-              {/* Partner video panel */}
+              {/* Partner video panel - EXACT structure from original */}
               <div className="video-panel partner-video">
-                <video autoPlay playsInline />
+                <video autoPlay playsInline></video>
               </div>
             </div>
           </main>
         </div>
 
-        {/* Chat toggle */}
+        {/* Chat toggle - EXACT structure from original */}
         <div className="chat-toggle-container">
-          <button
-            id="chat-toggle-btn"
-            onClick={() => setIsChatOpen(!isChatOpen)}
-          >
-            Chat
-          </button>
+          <button id="chat-toggle-btn" onClick={handleChatToggle}>Chat</button>
           <aside className={`text-chat-panel ${isChatOpen ? '' : 'hidden'}`}>
             <header className="chat-header">
               <h2>Text Chat</h2>
-              <button
-                id="close-chat-btn"
-                aria-label="Close chat"
-                onClick={() => setIsChatOpen(false)}
-              >
-                ×
-              </button>
+              <button id="close-chat-btn" aria-label="Close chat" onClick={handleChatClose}>×</button>
             </header>
-            <div className="chat-messages" aria-live="polite">
-              {/* Chat messages will appear here */}
-            </div>
+            <div className="chat-messages" aria-live="polite"></div>
             <form className="chat-input-form" onSubmit={handleChatSubmit}>
-              <input
-                type="text"
-                placeholder="Type a message..."
-                value={chatMessage}
-                onChange={(e) => setChatMessage(e.target.value)}
-              />
+              <input type="text" placeholder="Type a message..." value={chatMessage} onChange={(e) => setChatMessage(e.target.value)} />
               <button type="submit">Send</button>
             </form>
           </aside>
