@@ -14,21 +14,21 @@ export const VideoCallInterface: React.FC = () => {
   useEffect(() => {
     const floatingBox = floatingBoxRef.current;
     const container = containerRef.current;
-    if (!floatingBox || !container) return;
+    if (!floatingBox || !container) {return;}
 
     let isDragging = false;
     let dragOffsetX = 0;
     let dragOffsetY = 0;
 
     function isDraggableTarget(target: Element) {
-      if ((target as HTMLElement).classList.contains('translator-header')) return true;
-      if (target === floatingBox) return true;
-      if (target.parentElement === floatingBox && !(target as HTMLElement).classList.contains('translator-textarea')) return true;
+      if ((target as HTMLElement).classList.contains('translator-header')) {return true;}
+      if (target === floatingBox) {return true;}
+      if (target.parentElement === floatingBox && !(target as HTMLElement).classList.contains('translator-textarea')) {return true;}
       return false;
     }
 
     const handleMouseDown = (e: MouseEvent) => {
-      if (!isDraggableTarget(e.target as Element)) return;
+      if (!isDraggableTarget(e.target as Element)) {return;}
       isDragging = true;
       const rect = floatingBox.getBoundingClientRect();
       dragOffsetX = e.clientX - rect.left;
@@ -43,7 +43,7 @@ export const VideoCallInterface: React.FC = () => {
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
+      if (!isDragging) {return;}
       const containerRect = container.getBoundingClientRect();
       let left = e.clientX - containerRect.left - dragOffsetX;
       let top = e.clientY - containerRect.top - dragOffsetY;
@@ -75,7 +75,7 @@ export const VideoCallInterface: React.FC = () => {
     const menu = dropdown?.querySelector('.dropdown-menu') as HTMLUListElement;
     const options = Array.from(menu?.querySelectorAll('li') || []);
 
-    if (!btn || !menu) return;
+    if (!btn || !menu) {return;}
 
     const handleBtnClick = () => {
       const expanded = btn.getAttribute('aria-expanded') === 'true';
@@ -256,6 +256,12 @@ export const VideoCallInterface: React.FC = () => {
           outline: none;
         }
 
+        .dropdown-menu li[aria-selected="true"] {
+          font-weight: 700;
+          background-color: #f9b700cc;
+          color: black;
+        }
+
         .profile-btn {
           background-color: transparent;
           border: 2px solid #f9b700;
@@ -272,6 +278,40 @@ export const VideoCallInterface: React.FC = () => {
           background-color: #f9b700;
           color: black;
           outline: none;
+        }
+
+        /* Fullscreen stretch */
+        @media (fullscreen), (fullscreen-active), (:-webkit-full-screen) {
+          body, html, .app-container {
+            height: 100vh;
+            width: 100vw;
+            max-width: 100vw;
+            max-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+          }
+          .video-chat-container {
+            height: 100vh;
+          }
+          .video-panels {
+            height: 100vh;
+            gap: 1.5vw;
+          }
+          .video-panel {
+            min-height: 100vh;
+            max-height: 100vh;
+            flex: 1 1 0;
+            max-width: none;
+          }
+          .chat-toggle-container {
+            bottom: 1.5vw;
+            right: 1.5vw;
+          }
+          .text-chat-panel {
+            width: 20vw;
+            max-height: 80vh;
+          }
         }
 
         .app-container {
@@ -620,8 +660,8 @@ export const VideoCallInterface: React.FC = () => {
             <form>
               <div className="form-row">
                 <label htmlFor="native-language">Native Language</label>
-                <select id="native-language" name="native-language" required>
-                  <option value="" disabled selected>Select</option>
+                <select id="native-language" name="native-language" required defaultValue="">
+                  <option value="" disabled>Select</option>
                   <option>English</option>
                   <option>Spanish</option>
                   <option>Chinese</option>
@@ -631,8 +671,8 @@ export const VideoCallInterface: React.FC = () => {
               </div>
               <div className="form-row">
                 <label htmlFor="target-language">Target Language</label>
-                <select id="target-language" name="target-language" required>
-                  <option value="" disabled selected>Select</option>
+                <select id="target-language" name="target-language" required defaultValue="">
+                  <option value="" disabled>Select</option>
                   <option>English</option>
                   <option>Spanish</option>
                   <option>Chinese</option>
@@ -642,8 +682,8 @@ export const VideoCallInterface: React.FC = () => {
               </div>
               <div className="form-row">
                 <label htmlFor="age">Age</label>
-                <select id="age" name="age">
-                  <option value="" disabled selected>Select</option>
+                <select id="age" name="age" defaultValue="">
+                  <option value="" disabled>Select</option>
                   <option>18-24</option>
                   <option>25-34</option>
                   <option>35-44</option>
@@ -653,8 +693,8 @@ export const VideoCallInterface: React.FC = () => {
               </div>
               <div className="form-row">
                 <label htmlFor="gender">Gender</label>
-                <select id="gender" name="gender">
-                  <option value="" disabled selected>Select</option>
+                <select id="gender" name="gender" defaultValue="">
+                  <option value="" disabled>Select</option>
                   <option>Any</option>
                   <option>Male</option>
                   <option>Female</option>
@@ -663,8 +703,8 @@ export const VideoCallInterface: React.FC = () => {
               </div>
               <div className="form-row">
                 <label htmlFor="proficiency">Proficiency Level</label>
-                <select id="proficiency" name="proficiency">
-                  <option value="" disabled selected>Select</option>
+                <select id="proficiency" name="proficiency" defaultValue="">
+                  <option value="" disabled>Select</option>
                   <option>Beginner</option>
                   <option>Intermediate</option>
                   <option>Advanced</option>
@@ -679,15 +719,15 @@ export const VideoCallInterface: React.FC = () => {
             <div className="video-panels" data-layout="side-by-side">
               {/* User video panel - EXACT structure from original */}
               <div className="video-panel user-video" style={{position: 'relative'}} ref={containerRef}>
-                <video autoPlay muted playsInline></video>
+                <video autoPlay muted playsInline />
                 <div className="left-floating-box" id="floating-box" tabIndex={0} ref={floatingBoxRef}>
                   <div className="translator-header">Translator</div>
-                  <textarea className="translator-textarea" placeholder="Type here..."></textarea>
+                  <textarea className="translator-textarea" placeholder="Type here..." />
                 </div>
               </div>
               {/* Partner video panel - EXACT structure from original */}
               <div className="video-panel partner-video">
-                <video autoPlay playsInline></video>
+                <video autoPlay playsInline />
               </div>
             </div>
           </main>
@@ -701,7 +741,7 @@ export const VideoCallInterface: React.FC = () => {
               <h2>Text Chat</h2>
               <button id="close-chat-btn" aria-label="Close chat" onClick={handleChatClose}>×</button>
             </header>
-            <div className="chat-messages" aria-live="polite"></div>
+            <div className="chat-messages" aria-live="polite" />
             <form className="chat-input-form" onSubmit={handleChatSubmit}>
               <input type="text" placeholder="Type a message..." value={chatMessage} onChange={(e) => setChatMessage(e.target.value)} />
               <button type="submit">Send</button>
