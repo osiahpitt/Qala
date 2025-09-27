@@ -4,31 +4,29 @@ import React, { useState, useEffect, useRef } from 'react';
 
 export const VideoCallInterface: React.FC = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('English');
-  const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
   const floatingBoxRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Make floating box draggable - EXACT replica from original code
+  // Make floating box draggable inside its container
   useEffect(() => {
     const floatingBox = floatingBoxRef.current;
     const container = containerRef.current;
-    if (!floatingBox || !container) {return;}
+    if (!floatingBox || !container) return;
 
     let isDragging = false;
     let dragOffsetX = 0;
     let dragOffsetY = 0;
 
     function isDraggableTarget(target: Element) {
-      if ((target as HTMLElement).classList.contains('translator-header')) {return true;}
-      if (target === floatingBox) {return true;}
-      if (target.parentElement === floatingBox && !(target as HTMLElement).classList.contains('translator-textarea')) {return true;}
+      if ((target as HTMLElement).classList.contains('translator-header')) return true;
+      if (target === floatingBox) return true;
+      if (target.parentElement === floatingBox && !(target as HTMLElement).classList.contains('translator-textarea')) return true;
       return false;
     }
 
     const handleMouseDown = (e: MouseEvent) => {
-      if (!isDraggableTarget(e.target as Element)) {return;}
+      if (!isDraggableTarget(e.target as Element)) return;
       isDragging = true;
       const rect = floatingBox.getBoundingClientRect();
       dragOffsetX = e.clientX - rect.left;
@@ -43,7 +41,7 @@ export const VideoCallInterface: React.FC = () => {
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging) {return;}
+      if (!isDragging) return;
       const containerRect = container.getBoundingClientRect();
       let left = e.clientX - containerRect.left - dragOffsetX;
       let top = e.clientY - containerRect.top - dragOffsetY;
@@ -68,14 +66,14 @@ export const VideoCallInterface: React.FC = () => {
     };
   }, []);
 
-  // Language dropdown logic - EXACT replica from original
+  // Language dropdown toggle and selection
   useEffect(() => {
     const dropdown = document.querySelector('.language-dropdown');
     const btn = dropdown?.querySelector('.dropdown-btn') as HTMLButtonElement;
     const menu = dropdown?.querySelector('.dropdown-menu') as HTMLUListElement;
     const options = Array.from(menu?.querySelectorAll('li') || []);
 
-    if (!btn || !menu) {return;}
+    if (!btn || !menu) return;
 
     const handleBtnClick = () => {
       const expanded = btn.getAttribute('aria-expanded') === 'true';
@@ -161,19 +159,22 @@ export const VideoCallInterface: React.FC = () => {
 
   return (
     <>
-      <style jsx>{`
-        @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;600;700&display=swap");
+      <style jsx global>{`
+        @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap");
 
         * {
           box-sizing: border-box;
-        }
-
-        .video-call-body {
           margin: 0;
           padding: 0;
-          height: 100vh;
-          width: 100vw;
+        }
+
+        html, body {
+          height: 100%;
+          width: 100%;
           overflow: hidden;
+        }
+
+        body {
           background: url('/Bf3EhsQdUry_xFMpMxrbp.jpg') center center/cover no-repeat fixed;
           color: #eee;
           font-family: "Roboto", sans-serif;
@@ -185,7 +186,79 @@ export const VideoCallInterface: React.FC = () => {
           min-height: 100vh;
           min-width: 100vw;
         }
+      `}</style>
 
+      <style jsx>{`
+        .app-container {
+          max-width: 1200px;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 1.25rem;
+        }
+
+        /* Fullscreen stretch */
+        @media (fullscreen), (fullscreen-active), (:-webkit-full-screen) {
+          body, html, .app-container {
+            height: 100vh;
+            width: 100vw;
+            max-width: 100vw;
+            max-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+          }
+          .video-chat-container {
+            height: 100vh;
+          }
+          .video-panels {
+            height: 100vh;
+            gap: 1.5vw;
+          }
+          .video-panel {
+            min-height: 100vh;
+            max-height: 100vh;
+            flex: 1 1 0;
+            max-width: none;
+          }
+          .chat-toggle-container {
+            bottom: 1.5vw;
+            right: 1.5vw;
+          }
+          .text-chat-panel {
+            width: 20vw;
+            max-height: 80vh;
+          }
+        }
+
+        /* Title box */
+        .header-box {
+          background-color: #121212;
+          padding: 1rem 2rem;
+          border-radius: 12px;
+          box-shadow: 0 0 15px #f9b700aa;
+          text-align: center;
+          max-width: 600px;
+          margin: 0 auto;
+          position: relative;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .header-box h1 {
+          font-weight: 300;
+          font-size: 2rem;
+          color: #f9b700;
+          text-transform: uppercase;
+          letter-spacing: 2px;
+          text-shadow: 0 0 8px #f9b700cc;
+          margin: 0;
+        }
+
+        /* Container for buttons top-right fixed outside and above header */
         .top-right-controls {
           position: fixed;
           top: 10px;
@@ -196,6 +269,7 @@ export const VideoCallInterface: React.FC = () => {
           align-items: center;
         }
 
+        /* Dropdown base */
         .dropdown {
           position: relative;
           user-select: none;
@@ -203,6 +277,7 @@ export const VideoCallInterface: React.FC = () => {
           cursor: pointer;
         }
 
+        /* Dropdown button */
         .dropdown-btn {
           background-color: #f9b700;
           border: none;
@@ -212,7 +287,6 @@ export const VideoCallInterface: React.FC = () => {
           color: black;
           box-shadow: 0 0 10px #f9b700cc;
           transition: background-color 0.25s ease;
-          cursor: pointer;
         }
 
         .dropdown-btn:hover,
@@ -222,6 +296,7 @@ export const VideoCallInterface: React.FC = () => {
           outline: none;
         }
 
+        /* Dropdown menu */
         .dropdown-menu {
           position: absolute;
           top: 110%;
@@ -262,6 +337,7 @@ export const VideoCallInterface: React.FC = () => {
           color: black;
         }
 
+        /* Profile button */
         .profile-btn {
           background-color: transparent;
           border: 2px solid #f9b700;
@@ -280,74 +356,7 @@ export const VideoCallInterface: React.FC = () => {
           outline: none;
         }
 
-        /* Fullscreen stretch */
-        @media (fullscreen), (fullscreen-active), (:-webkit-full-screen) {
-          body, html, .app-container {
-            height: 100vh;
-            width: 100vw;
-            max-width: 100vw;
-            max-height: 100vh;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-          }
-          .video-chat-container {
-            height: 100vh;
-          }
-          .video-panels {
-            height: 100vh;
-            gap: 1.5vw;
-          }
-          .video-panel {
-            min-height: 100vh;
-            max-height: 100vh;
-            flex: 1 1 0;
-            max-width: none;
-          }
-          .chat-toggle-container {
-            bottom: 1.5vw;
-            right: 1.5vw;
-          }
-          .text-chat-panel {
-            width: 20vw;
-            max-height: 80vh;
-          }
-        }
-
-        .app-container {
-          max-width: 1200px;
-          width: 100%;
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          gap: 1.25rem;
-        }
-
-        .header-box {
-          background-color: #121212;
-          padding: 1rem 2rem;
-          border-radius: 12px;
-          box-shadow: 0 0 15px #f9b700aa;
-          text-align: center;
-          max-width: 600px;
-          margin: 0 auto;
-          position: relative;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: 1rem;
-        }
-
-        .header-box h1 {
-          font-weight: 300;
-          font-size: 2rem;
-          color: #f9b700;
-          text-transform: uppercase;
-          letter-spacing: 2px;
-          text-shadow: 0 0 8px #f9b700cc;
-          margin: 0;
-        }
-
+        /* Criteria selection with floating tab */
         .criteria-selection {
           position: relative;
           background-color: #1a1a1a;
@@ -359,6 +368,7 @@ export const VideoCallInterface: React.FC = () => {
           align-items: center;
         }
 
+        /* Floating tab sticking out top-left */
         .criteria-tab {
           position: absolute;
           top: -1.2rem;
@@ -386,6 +396,7 @@ export const VideoCallInterface: React.FC = () => {
           gap: 1rem 2rem;
         }
 
+        /* Form rows */
         .form-row {
           display: flex;
           flex-direction: column;
@@ -415,6 +426,7 @@ export const VideoCallInterface: React.FC = () => {
           box-shadow: 0 0 8px #f9b700ee;
         }
 
+        /* Video chat container */
         .video-chat-container {
           background-color: #121212;
           border-radius: 12px;
@@ -428,6 +440,7 @@ export const VideoCallInterface: React.FC = () => {
           justify-content: center;
         }
 
+        /* Video panels side by side */
         .video-panels {
           display: flex;
           justify-content: center;
@@ -452,6 +465,7 @@ export const VideoCallInterface: React.FC = () => {
           overflow: hidden;
         }
 
+        /* Video */
         .video-panel video {
           width: 100%;
           height: 100%;
@@ -462,6 +476,7 @@ export const VideoCallInterface: React.FC = () => {
           background-color: black;
         }
 
+        /* Floating translation box inside left video panel */
         .left-floating-box {
           position: absolute;
           top: 10px;
@@ -510,6 +525,7 @@ export const VideoCallInterface: React.FC = () => {
           border-radius: 6px;
         }
 
+        /* Chat toggle */
         .chat-toggle-container {
           position: fixed;
           bottom: 20px;
@@ -624,130 +640,120 @@ export const VideoCallInterface: React.FC = () => {
         }
       `}</style>
 
-      <div className="video-call-body">
-        {/* Top-right controls - EXACT structure from original */}
-        <div className="top-right-controls">
-          <div className="dropdown language-dropdown" tabIndex={0}>
-            <button
-              className="dropdown-btn"
-              aria-haspopup="listbox"
-              aria-expanded="false"
-              id="languageBtn"
-            >
-              Language: English ▾
-            </button>
-            <ul className="dropdown-menu" role="listbox" aria-labelledby="languageBtn" hidden>
-              <li role="option" tabIndex={0} data-lang="en" aria-selected="true">English</li>
-              <li role="option" tabIndex={0} data-lang="es">Spanish</li>
-              <li role="option" tabIndex={0} data-lang="zh">Chinese</li>
-              <li role="option" tabIndex={0} data-lang="ru">Russian</li>
-              <li role="option" tabIndex={0} data-lang="fr">French</li>
-            </ul>
-          </div>
-          <button className="profile-btn" type="button">Profile</button>
+      <div className="top-right-controls">
+        <div className="dropdown language-dropdown" tabIndex={0}>
+          <button
+            className="dropdown-btn"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            id="languageBtn"
+          >
+            Language: English ▾
+          </button>
+          <ul className="dropdown-menu" role="listbox" aria-labelledby="languageBtn" hidden>
+            <li role="option" tabIndex={0} data-lang="en" aria-selected="true">English</li>
+            <li role="option" tabIndex={0} data-lang="es">Spanish</li>
+            <li role="option" tabIndex={0} data-lang="zh">Chinese</li>
+            <li role="option" tabIndex={0} data-lang="ru">Russian</li>
+            <li role="option" tabIndex={0} data-lang="fr">French</li>
+          </ul>
         </div>
+        <button className="profile-btn" type="button">Profile</button>
+      </div>
 
-        {/* Main app container */}
-        <div className="app-container">
-          {/* Header */}
-          <header className="header-box">
-            <h1>QALA Language Exchange</h1>
-          </header>
+      <div className="app-container">
+        <header className="header-box">
+          <h1>QALA Language Exchange</h1>
+        </header>
 
-          {/* Criteria selection - EXACT structure from original */}
-          <section className="criteria-selection">
-            <div className="criteria-tab">Preferred Language Partner</div>
-            <form>
-              <div className="form-row">
-                <label htmlFor="native-language">Native Language</label>
-                <select id="native-language" name="native-language" required defaultValue="">
-                  <option value="" disabled>Select</option>
-                  <option>English</option>
-                  <option>Spanish</option>
-                  <option>Chinese</option>
-                  <option>Russian</option>
-                  <option>French</option>
-                </select>
-              </div>
-              <div className="form-row">
-                <label htmlFor="target-language">Target Language</label>
-                <select id="target-language" name="target-language" required defaultValue="">
-                  <option value="" disabled>Select</option>
-                  <option>English</option>
-                  <option>Spanish</option>
-                  <option>Chinese</option>
-                  <option>Russian</option>
-                  <option>French</option>
-                </select>
-              </div>
-              <div className="form-row">
-                <label htmlFor="age">Age</label>
-                <select id="age" name="age" defaultValue="">
-                  <option value="" disabled>Select</option>
-                  <option>18-24</option>
-                  <option>25-34</option>
-                  <option>35-44</option>
-                  <option>45-54</option>
-                  <option>55+</option>
-                </select>
-              </div>
-              <div className="form-row">
-                <label htmlFor="gender">Gender</label>
-                <select id="gender" name="gender" defaultValue="">
-                  <option value="" disabled>Select</option>
-                  <option>Any</option>
-                  <option>Male</option>
-                  <option>Female</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              <div className="form-row">
-                <label htmlFor="proficiency">Proficiency Level</label>
-                <select id="proficiency" name="proficiency" defaultValue="">
-                  <option value="" disabled>Select</option>
-                  <option>Beginner</option>
-                  <option>Intermediate</option>
-                  <option>Advanced</option>
-                  <option>Native</option>
-                </select>
-              </div>
-            </form>
-          </section>
+        <section className="criteria-selection">
+          <div className="criteria-tab">Preferred Language Partner</div>
+          <form>
+            <div className="form-row">
+              <label htmlFor="native-language">Native Language</label>
+              <select id="native-language" name="native-language" required defaultValue="">
+                <option value="" disabled>Select</option>
+                <option>English</option>
+                <option>Spanish</option>
+                <option>Chinese</option>
+                <option>Russian</option>
+                <option>French</option>
+              </select>
+            </div>
+            <div className="form-row">
+              <label htmlFor="target-language">Target Language</label>
+              <select id="target-language" name="target-language" required defaultValue="">
+                <option value="" disabled>Select</option>
+                <option>English</option>
+                <option>Spanish</option>
+                <option>Chinese</option>
+                <option>Russian</option>
+                <option>French</option>
+              </select>
+            </div>
+            <div className="form-row">
+              <label htmlFor="age">Age</label>
+              <select id="age" name="age" defaultValue="">
+                <option value="" disabled>Select</option>
+                <option>18-24</option>
+                <option>25-34</option>
+                <option>35-44</option>
+                <option>45-54</option>
+                <option>55+</option>
+              </select>
+            </div>
+            <div className="form-row">
+              <label htmlFor="gender">Gender</label>
+              <select id="gender" name="gender" defaultValue="">
+                <option value="" disabled>Select</option>
+                <option>Any</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div className="form-row">
+              <label htmlFor="proficiency">Proficiency Level</label>
+              <select id="proficiency" name="proficiency" defaultValue="">
+                <option value="" disabled>Select</option>
+                <option>Beginner</option>
+                <option>Intermediate</option>
+                <option>Advanced</option>
+                <option>Native</option>
+              </select>
+            </div>
+          </form>
+        </section>
 
-          {/* Video chat container */}
-          <main className="video-chat-container">
-            <div className="video-panels" data-layout="side-by-side">
-              {/* User video panel - EXACT structure from original */}
-              <div className="video-panel user-video" style={{position: 'relative'}} ref={containerRef}>
-                <video autoPlay muted playsInline />
-                <div className="left-floating-box" id="floating-box" tabIndex={0} ref={floatingBoxRef}>
-                  <div className="translator-header">Translator</div>
-                  <textarea className="translator-textarea" placeholder="Type here..." />
-                </div>
-              </div>
-              {/* Partner video panel - EXACT structure from original */}
-              <div className="video-panel partner-video">
-                <video autoPlay playsInline />
+        <main className="video-chat-container">
+          <div className="video-panels" data-layout="side-by-side">
+            <div className="video-panel user-video" style={{position: 'relative'}} ref={containerRef}>
+              <video autoPlay muted playsInline />
+              <div className="left-floating-box" id="floating-box" tabIndex={0} ref={floatingBoxRef}>
+                <div className="translator-header">Translator</div>
+                <textarea className="translator-textarea" placeholder="Type here..." />
               </div>
             </div>
-          </main>
-        </div>
+            <div className="video-panel partner-video">
+              <video autoPlay playsInline />
+            </div>
+          </div>
+        </main>
+      </div>
 
-        {/* Chat toggle - EXACT structure from original */}
-        <div className="chat-toggle-container">
-          <button id="chat-toggle-btn" onClick={handleChatToggle}>Chat</button>
-          <aside className={`text-chat-panel ${isChatOpen ? '' : 'hidden'}`}>
-            <header className="chat-header">
-              <h2>Text Chat</h2>
-              <button id="close-chat-btn" aria-label="Close chat" onClick={handleChatClose}>×</button>
-            </header>
-            <div className="chat-messages" aria-live="polite" />
-            <form className="chat-input-form" onSubmit={handleChatSubmit}>
-              <input type="text" placeholder="Type a message..." value={chatMessage} onChange={(e) => setChatMessage(e.target.value)} />
-              <button type="submit">Send</button>
-            </form>
-          </aside>
-        </div>
+      <div className="chat-toggle-container">
+        <button id="chat-toggle-btn" onClick={handleChatToggle}>Chat</button>
+        <aside className={`text-chat-panel ${isChatOpen ? '' : 'hidden'}`}>
+          <header className="chat-header">
+            <h2>Text Chat</h2>
+            <button id="close-chat-btn" aria-label="Close chat" onClick={handleChatClose}>×</button>
+          </header>
+          <div className="chat-messages" aria-live="polite" />
+          <form className="chat-input-form" onSubmit={handleChatSubmit}>
+            <input type="text" placeholder="Type a message..." value={chatMessage} onChange={(e) => setChatMessage(e.target.value)} />
+            <button type="submit">Send</button>
+          </form>
+        </aside>
       </div>
     </>
   );
